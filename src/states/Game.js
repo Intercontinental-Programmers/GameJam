@@ -1,4 +1,3 @@
-/* globals __DEV__ */
 import Phaser from 'phaser'
 import Mushroom from '../sprites/Mushroom'
 import Enemy from '../sprites/Enemy'
@@ -36,6 +35,15 @@ export default class extends Phaser.State {
     this.player.body.collideWorldBounds = true;
     this.player.body.setSize(20, 32, 5, 16);
 
+    //ENEMY
+    this.enemy = new Enemy({
+      game: this.game,
+      x: this.world.centerX,
+      y: this.world.centerY,
+      asset: 'dude'
+    })
+    this.game.add.existing(this.enemy);
+
     //PLAYER ANIMATIONS
     this.player.animations.add('left', [0, 1, 2, 3], 10, true);
     this.player.animations.add('turn', [4], 20, true);
@@ -50,6 +58,8 @@ export default class extends Phaser.State {
   update() {
 
     this.game.physics.arcade.collide(this.player, this.layer);
+    this.game.physics.arcade.collide(this.enemy, this.layer);
+    
 
     this.player.body.velocity.x = 0;
 
