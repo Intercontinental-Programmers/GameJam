@@ -14,9 +14,11 @@ export default class extends Phaser.State {
     // load your assets
     //
     this.load.image('mushroom', 'assets/images/mushroom2.png')
+    this.load.image('btnPlay', 'assets/images/btn-play.png')
+    this.load.image('logo', 'assets/images/mushroom2.png')
   }
 
   create () {
-    this.state.start('Game')
+    this.state.start('Menu')
   }
 }
