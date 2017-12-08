@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { centerGameObjects } from '../utils'
+// import enemy from '../../assets/images/EnemyStick.jpg'
 
 export default class extends Phaser.State {
   init () {}
@@ -14,6 +15,7 @@ export default class extends Phaser.State {
     // load your assets
     //
     this.load.image('mushroom', 'assets/images/mushroom2.png')
+    this.load.image('enemy', 'assets/images/stick.jpg')
   }
 
   create () {
