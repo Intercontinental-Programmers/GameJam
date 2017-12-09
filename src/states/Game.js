@@ -110,7 +110,7 @@ export default class extends Phaser.State {
    
     this.enemies.forEach(enemy => {
       if(enemy.detectPlayer()){
-        console.log('wykryto cie')
+    
         window.playerDetected = true;
         this.seen = true;
         this.timeUnseen = Date.now();
@@ -118,7 +118,7 @@ export default class extends Phaser.State {
     });
 
 
-    if(!this.flag){
+    if(!this.seen){
       this.timeSeen = Date.now();  
     }
 
@@ -129,7 +129,7 @@ export default class extends Phaser.State {
     if(this.checkTimeDetected()){
       this.game.state.start('GameOver');
     }
-    this.flag = false;
+    this.seen = false;
   }
 
   checkTimeUndetected(){
