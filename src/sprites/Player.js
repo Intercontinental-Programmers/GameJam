@@ -49,6 +49,7 @@ export default class extends Phaser.Sprite {
                 25, 24, 23, 22
             ], 10, true);
         this.body.velocity.x = 0;
+        this.onLadder = 0;
         this.jumpTimer = this.game.time.now;
         this.sneking = 0;
         this.inventory = [];
@@ -88,6 +89,14 @@ export default class extends Phaser.Sprite {
         }
     }
 
+    moveUp() {
+                this.body.velocity.y -= 55;
+            }
+        moveDown() {
+
+                this.body.velocity.y += 55;
+            }
+
     stop() {
         this
             .animations
@@ -112,9 +121,25 @@ export default class extends Phaser.Sprite {
             this.speed = 50;
         
         this.checkEdge();
+        this.setDefaultSpeed();
+        this.checkLadder();
+
     
     }
+
+    checkLadder(){
+        if(this.onLadder){
+            this.speed = 50;
+        } 
+    }
     
+    setDefaultSpeed(){
+        if(this.body.onFloor){
+            this.setOnLadder(0);
+            console.log("nie jestem na drabinie");
+        }
+        this.speed = 150;
+    }
     checkEdge() {
 
         // console.log("Layer: " + this.layer);
@@ -130,6 +155,13 @@ export default class extends Phaser.Sprite {
                 console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
             }
         }
+    }
+
+    setOnLadder(status){
+        this.onLadder = status;
+    }
+    getOnLadder(){
+        return this.onLadder;
     }
 
     updateXCoordinate(){
