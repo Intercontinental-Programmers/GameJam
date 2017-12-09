@@ -119,11 +119,15 @@ export default class extends Phaser.Sprite {
         // console.log("Layer: " + this.layer);
 
         if (this.layer.getTiles(this.x , this.y + 15, 20, 5, true).length > 0 && this.facing == "right") {
-            this.body.velocity.y = -100;
-            console.log("Right: " + this.layer.getTiles(this.x , this.y + 15, 10,5 , true) );
+            if(this.layer.getTiles(this.x , this.y - 20, 20, 5, true).length == 0){
+                this.body.velocity.y = -100;
+                console.log("Right: " + this.layer.getTiles(this.x , this.y + 15, 10,5 , true) );
+            }
         } else if(this.layer.getTiles(this.x-20 , this.y + 15, 20, 5, true).length > 0 && this.facing == "left"){
-            this.body.velocity.y = -100;
-            console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
+            if(this.layer.getTiles(this.x-20 , this.y - 20, 220, 5, true).length == 0){
+                this.body.velocity.y = -100;
+                console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
+            }
         }
     }
 }
