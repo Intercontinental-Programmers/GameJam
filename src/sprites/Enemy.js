@@ -51,6 +51,7 @@ export default class extends Phaser.Sprite {
       new Phaser.Point(this.x + 100, this.y - 48),
       new Phaser.Point(this.x + 100, this.y + 25)
     ]);
+
     this.polyOfViewLeft = new Phaser.Polygon([
       new Phaser.Point(this.x, this.y - 25),
       new Phaser.Point(this.x - 100, this.y - 48),
@@ -106,7 +107,7 @@ export default class extends Phaser.Sprite {
       this.graphics.beginFill(0xFFFFff);
       this.graphics.drawPolygon(this.polyOfViewRight2.points);
     }
-
+    this.graphics.alpha = 0.2;
     this.graphics.endFill();
   }
 
