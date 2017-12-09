@@ -47,8 +47,8 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(this.game.width * 0.1, 300);
-    this.addNewEnemy(this.game.width * 0.3, 300);
+    this.addNewEnemy(this.game.width * 0.4, 100);
+    this.addNewEnemy(this.game.width * 0.6, 100);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -101,12 +101,19 @@ export default class extends Phaser.State {
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.updateShadowTexture();
 
+    this.enemies.forEach(enemy => {
+      if(enemy.detectPlayer()){
+        // this.state.start('GameOver');
+        console.log('wykryto cie');
+      }
+    });
+
   }
 
   updateShadowTexture() {
 
     this.shadowTexture.context.fillStyle = 'rgb(10, 10, 10)';
-    this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
+    // this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
 
     var radius = 100 + this.game.rnd.integerInRange(1, 5),
       heroX = this.player.x - this.game.camera.x,
@@ -116,7 +123,7 @@ export default class extends Phaser.State {
       heroX, heroY, 100 * 0.75,
       heroX, heroY, radius);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
     this.shadowTexture.context.beginPath();
     this.shadowTexture.context.fillStyle = gradient;
@@ -126,12 +133,7 @@ export default class extends Phaser.State {
     this.shadowTexture.dirty = true;
     this.player.updateXCoordinate();
     this.player.updateYCoordinate();
-    this.enemies.forEach(enemy => {
-      if(enemy.detectPlayer()){
-        this.state.start('GameOver');
-      }
-    });
-    
+  
   }
 
   key_collector(player, key) {

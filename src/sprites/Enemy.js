@@ -195,10 +195,10 @@ export default class extends Phaser.Sprite {
       for(var i = 0; i < 4; i++){
         if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           //change attitude of enemy
-          return true;
+          return true;;
         }
         else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          return false;
+          return !this.player.sneking;
         }
       }
     }
@@ -209,7 +209,7 @@ export default class extends Phaser.Sprite {
           return true;
         }
         else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          return false;
+          return !this.player.sneking;
         }
         
       }
