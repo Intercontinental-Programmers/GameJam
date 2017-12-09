@@ -20,7 +20,7 @@ export default class extends Phaser.Sprite {
 
     //kills particular door -> deletes collision
     //needed review from John
-    unlockDoor(player, door) {
+    static unlockDoor(player, door) {
         for (var counter in player.inventory) {
             if (player.inventory[counter] == door.key)
                 door.kill();

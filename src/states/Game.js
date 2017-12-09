@@ -19,7 +19,7 @@ export default class extends Phaser.State {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //LOADING BACKGROUND
-    this.bg = game.add.tileSprite(0, 0, 900, 600, 'background');
+    this.bg = this.game.add.tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
     //LOADING MAP
@@ -48,38 +48,15 @@ export default class extends Phaser.State {
     this.enemies = this.game.add.group();
     this.addNewEnemy(this.game.width * 0.1, 300);
     this.addNewEnemy(this.game.width * 0.3, 300);
-    this.addNewEnemy(this.game.width * 0.45, 300);
-    this.addNewEnemy(this.game.width * 0.7, 300);
-    this.addNewEnemy(this.game.width * 0.9, 300);
 
-    //ENEMY
-    this.enemy = new Enemy({
-      game: this.game,
-      x: this.world.centerX,
-      y: this.world.centerY,
-      asset: 'dude'
-    })
-    this.game.add.existing(this.enemy);
+    //DOORS AND KEYS
+    this.doors = this.game.add.group();
+    this.keys = this.game.add.group();
+    this.keyIdCounter = 0;
 
-    //KEY
-    this.key = new Key({
-      game: this.game,
-      x: this.world.centerX - 200,
-      y: this.world.centerY - 50,
-      asset: 'droid'
-    }, 1);
-    this.game.add.existing(this.key);
-
-    //DOOR
-    this.door = new Door({
-      game: this.game,
-      x: this.world.centerX + -400,
-      y: this.world.centerY,
-      asset: 'dude',
-      key: this.key
-    })
-    this.game.add.existing(this.door);
-
+    this.addKeyDoorPair(this.game.width * 0.4, 300, this.genNewKey(this.game.width * 0.2, 300));
+    this.addKeyDoorPair(this.game.width * 0.62, 200, this.genNewKey(this.game.width * 0.55, 300));
+ 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -87,6 +64,8 @@ export default class extends Phaser.State {
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
     this.killButtonFlag = true;
+
+
   }
 
   addNewEnemy(posX, posY) {
@@ -95,25 +74,59 @@ export default class extends Phaser.State {
       game: this.game,
       x: posX,
       y: posY,
-      asset: 'enemy'
+      asset: 'enemy',
+      layer: this.layer
     }));
+
 
     console.log('enemy created');
   }
 
-  genRandomSpawnPoint() {
-    return this.game.rnd.integerInRange(16, this.game.width - 16);
+
+  addKeyDoorPair(doorPosX, doorPosY, corrKey){
+
+    this.doors.add(new Door({
+      game: this.game,
+      x: doorPosX,
+      y: doorPosY,
+      asset: 'dude',
+      key: corrKey
+    }));
+
+    this.keys.add(corrKey);
+
   }
+
+  genNewKey(posX, posY){
+   return new Key({
+      game: this.game,
+      x: posX,
+      y: posY,
+      asset: 'droid'
+    }, this.keyIdCounter++);
+  }
+
+
+
+
+  genRandomSpawnPoint(){
+      return this.game.rnd.integerInRange(16, this.game.width - 16);
+  }
+
+
+
+  
 
   update() {
 
+    // console.log(this.map.getTileWorldXY( this.player.x, this.player.y - 50, 'Tile Layer 1' ));
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
-    this.game.physics.arcade.collide(this.door, this.layer);
-    this.game.physics.arcade.collide(this.key, this.layer);
-    this.game.physics.arcade.collide(this.player, this.door, this.door.unlockDoor);
-    this.game.physics.arcade.overlap(this.player, this.key, this.key_collector, null, this);
+    this.game.physics.arcade.collide(this.doors, this.layer);
+    this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
+    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
 
     this.enemies.setAll('body.immovable', true);
     // this.enemy.body.immovable = true;
