@@ -29,6 +29,8 @@ export default class extends Phaser.Sprite {
         this.facing = 'idle';
         this.jumpTimer = this.game.time.now;
 
+        this.equipment = [];
+
     }
 
     moveLeft() {
@@ -69,13 +71,27 @@ export default class extends Phaser.Sprite {
     }
 
 
-    jump(){
+    jump() {
 
         if(this.body.onFloor()){
             this.body.velocity.y = -250;
             this.jumpTimer = this.game.time.now;
         }
 
+    }
+
+    useObject() {
+      usableObjects = this.game.actualMap.getUsableObjects();
+      forEach(object in usableObjects)
+      {
+        if(checkOverlap(this, object))
+          object.use();
+      }
+    }
+
+    addToEquipment(object)
+    {
+      this.equipment.push(object);
     }
 
     update() {}

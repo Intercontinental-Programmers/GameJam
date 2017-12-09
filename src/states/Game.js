@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import Mushroom from '../sprites/Mushroom'
 import Enemy from '../sprites/Enemy'
 import Player from '../sprites/Player'
+import Key from '../sprites/Key'
 
 export default class extends Phaser.State {
 
@@ -16,6 +17,7 @@ export default class extends Phaser.State {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //LOADING BACKGROUND
+    this.actualMap = new Map();
     this.bg = game.add.tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
@@ -46,6 +48,17 @@ export default class extends Phaser.State {
     })
     this.game.add.existing(this.enemy);
 
+    //KEY
+    this.key = new Key({
+      game: this.game,
+      x: this.world.centerX,
+      y: this.world.centerY,
+      asset: 'droid'
+    }, 1);
+    this.game.add.existing(this.key);
+
+    this.keys = [];
+    this.keys.push(this.key);
 
 
     //GAME CAMERA, CURSORS
@@ -58,7 +71,8 @@ export default class extends Phaser.State {
 
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemy, this.layer);
-    
+    this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.overlap(this.keys, this.player, this.keyOverlapHandler, null, this);
 
     this.player.body.velocity.x = 0;
     this.movementPlayer();
@@ -81,10 +95,18 @@ export default class extends Phaser.State {
     else if (this.facing != 'idle') {
        this.player.stop();
     }
-    
+
 
     if (this.jumpButton.isDown ) {
       this.player.jump();
     }
   }
+
+  keyOverlapHandler(player, key)
+  {
+      var newKey = Object.assign({}, key);
+      key.kill();
+      player.addToEquipment(newKey);
+  }
+
 }
