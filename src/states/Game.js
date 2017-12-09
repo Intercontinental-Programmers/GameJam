@@ -12,7 +12,7 @@ export default class extends Phaser.State {
     super()
     this.key_counter = 0;
     this.CHASING_TIME = 4000;
-    this.GAME_OVER_TIME = 2000;
+    this.GAME_OVER_TIME = 1000;
     window.playerDetected = false;
   }
 
@@ -49,7 +49,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(200, 100);
+    this.addNewEnemy(400, 100);
     this.addNewEnemy(1000, 300);
     this.addNewEnemy(800, 550);
 

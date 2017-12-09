@@ -21,10 +21,7 @@ export default class extends Phaser.Sprite {
     this.player = player;
     //speed of movement
     this.SPEED = 70;
-    //modes
-    // this.attackMode = 0;
-    // this.wanderMode = 1;
-    // this.watchMode = 0; // staying in one place
+    //0 - wander, 1 - chase
     this.state = 0;
 
     this.sharedState = sharedState;
@@ -44,6 +41,9 @@ export default class extends Phaser.Sprite {
       .add('right', [
         5, 6, 7, 8
       ], 10, true);
+
+
+
     this.body.velocity.x = 0;
     this.facing = this.genFirstDirection();
     this.jumpTimer = this.game.time.now;
@@ -82,10 +82,12 @@ export default class extends Phaser.Sprite {
     //if elapsed time < generated time
     if(this.checkTime()){
       if(this.facing == 'left'){
-        this.moveLeft();
+        this.body.velocity.x  = -this.SPEED;
+        this.animations.play('left');
       }
       else{
-        this.moveRight();
+        this.body.velocity.x  = this.SPEED;
+        this.animations.play('right');
       }
     }
     //else we reset the timer and switch direction
@@ -94,33 +96,37 @@ export default class extends Phaser.Sprite {
     }
   }
 
-  moveLeft(){
-    // this.facing = 'left';
-    this.body.velocity.x  = -this.SPEED;
+  runLeft(){
+    this.facing = 'left';
+    this.body.velocity.x  = -(this.SPEED + 30);
     this.animations.play('left');
   }
 
-  moveRight(){
-    // this.facing = 'right';
-    this.body.velocity.x  = this.SPEED;
+  runRight(){
+    this.facing = 'right';
+    this.body.velocity.x  = (this.SPEED + 30);
     this.animations.play('right');
   }
 
   chasePlayer() {
 
-    if(this.player.body.x < this.body.x){
-      this.facing = 'left';
-      this.moveLeft();
-    }
-    else{
-      this.facing = 'right';
-      this.moveRight();
+    if(this.isOnTheSameLevel()){
+      console.log('chasing')
+      if(this.player.body.x < this.body.x){
+        this.facing = 'left';
+        this.runLeft();
+       
+      }
+      else{
+        this.facing = 'right';
+        this.runRight();
+      }
     }
   }
 
-  checkDistance(){
+  isOnTheSameLevel(){
 
-    return Math.sqrt(Math.pow(this.player.body.x - this.body.x, 2) + Math.pow(this.player.body.y - this.body.y, 2)) < 400;
+    return Math.abs(this.player.body.y - this.body.y) < 50
   }
 
   checkTime(){
