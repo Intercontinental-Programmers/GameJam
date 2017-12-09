@@ -3,8 +3,14 @@ import Phaser from 'phaser'
 export default class extends Phaser.Sprite {
   constructor({ game, x, y, asset }) {
     super(game, x, y, asset),
-      this.anchor.setTo(0.5),
-      this.game.physics.arcade.enable(this),
+      this
+        .anchor
+        .setTo(0.5),
+      this
+        .game
+        .physics
+        .arcade
+        .enable(this),
       //this.enableBody = true,
       this.timeToStep = this.game.time.now;
 
@@ -39,20 +45,42 @@ export default class extends Phaser.Sprite {
     this.body.velocity.x = 0;
     this.facing = 'idle';
     this.jumpTimer = this.game.time.now;
+    
+    this.polyOfViewRight = new Phaser.Polygon([
+      new Phaser.Point(this.x, this.y - 23),
+      new Phaser.Point(this.x + 100, this.y - 48),
+      new Phaser.Point(this.x + 100, this.y + 25)
+    ]);
+    this.polyOfViewLeft = new Phaser.Polygon([
+      new Phaser.Point(this.x, this.y - 25),
+      new Phaser.Point(this.x - 100, this.y - 48),
+      new Phaser.Point(this.x - 100, this.y + 25)
+    ]);
+
+    this.polyOfViewRight2 = new Phaser.Polygon([
+      new Phaser.Point(this.x - 9, this.y - 10),
+      new Phaser.Point(this.x + 66.7, this.y - 24.35),
+      new Phaser.Point(this.x + 66.7, this.y + 24.35)
+    ]);
+
+    this.polyOfViewLeft2 = new Phaser.Polygon([
+      new Phaser.Point(this.x - 9, this.y - 10),
+      new Phaser.Point(this.x - 66.7, this.y - 24.35),
+      new Phaser.Point(this.x - 66.7, this.y + 24.35)
+    ]);
+
   }
 
   wander() {
     if (this.moveLeft === 1) {
-      console.log("Ruszam sie w lewo");
       this.body.velocity.x = -this.speed;
       this.moveLeft = 0;
       this.moveRight = 1;
       this
         .animations
         .play('left');
-    }
-    else if (this.moveRight === 1) {
-      console.log("Ruszam sie w prawo");
+
+    } else if (this.moveRight === 1) {
       this.body.velocity.x = this.speed;
       this.moveRight = 0;
       this.moveLeft = 1;
@@ -60,6 +88,26 @@ export default class extends Phaser.Sprite {
         .animations
         .play('right');
     }
+  }
+
+  drawView() {
+
+
+
+    this.graphics.beginFill(0xFF33ff);
+    if (this.moveLeft === 0) {
+      this.graphics.drawPolygon(this.polyOfViewLeft.points);
+      this.graphics.beginFill(0xFFFFff);
+      this.graphics.drawPolygon(this.polyOfViewLeft2.points);
+    }
+    else {
+      this.graphics.beginFill(0xFF33ff);
+      this.graphics.drawPolygon(this.polyOfViewRight.points);
+      this.graphics.beginFill(0xFFFFff);
+      this.graphics.drawPolygon(this.polyOfViewRight2.points);
+    }
+
+    this.graphics.endFill();
   }
 
   update() {
@@ -71,6 +119,35 @@ export default class extends Phaser.Sprite {
       this.timeToStep = this.game.time.now;
       this.wander();
     }
+
+
+    this.polyOfViewRight = new Phaser.Polygon([
+      new Phaser.Point(this.x + 10, this.y - 20),
+      new Phaser.Point(this.x + 120, this.y - 45.8),
+      new Phaser.Point(this.x + 120, this.y + 25.8)
+    ]);
+
+    this.polyOfViewRight2 = new Phaser.Polygon([
+      new Phaser.Point(this.x + 10, this.y - 20),
+      new Phaser.Point(this.x + 80.7, this.y - 36.85),
+      new Phaser.Point(this.x + 80.7, this.y + 8.85)
+    ]);
+
+    this.polyOfViewLeft2 = new Phaser.Polygon([
+      new Phaser.Point(this.x - 9, this.y - 20),
+      new Phaser.Point(this.x - 80.7, this.y - 36.35),
+      new Phaser.Point(this.x - 80.7, this.y + 8.90)
+    ]);
+
+    this.polyOfViewLeft = new Phaser.Polygon([
+      new Phaser.Point(this.x - 9, this.y - 20),
+      new Phaser.Point(this.x - 120, this.y - 45),
+      new Phaser.Point(this.x - 120, this.y + 25)
+    ]);
+    this.graphics.clear();
+    this.drawView();
+
+
 
   }
 }
