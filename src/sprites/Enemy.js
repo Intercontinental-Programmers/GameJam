@@ -122,24 +122,6 @@ export default class extends Phaser.Sprite {
     }
   }
 
-  drawView() {
-
-    this.graphics.beginFill(0xFFFFFF);
-    if (this.moveLeft === 0) {
-      this.graphics.drawPolygon(this.polyOfViewLeft.points);
-      this.graphics.beginFill(0xFFFFff);
-      this.graphics.drawPolygon(this.polyOfViewLeft2.points);
-    }
-    else {
-      this.graphics.beginFill(0xFFFFFF);
-      this.graphics.drawPolygon(this.polyOfViewRight.points);
-      this.graphics.beginFill(0xFFFFff);
-      this.graphics.drawPolygon(this.polyOfViewRight2.points);
-    }
-    this.graphics.alpha = 0.2;
-    this.graphics.endFill();
-  }
-
   update() {
   
     this.wander();
@@ -174,14 +156,14 @@ export default class extends Phaser.Sprite {
   }
 
   drawView(){
-    this.graphics.beginFill(0xFF33ff);
+    this.graphics.beginFill(0xFFFFff);
     if (this.facing == 'left') {
       this.graphics.drawPolygon(this.polyOfViewLeft.points);
       this.graphics.beginFill(0xFFFFff);
       this.graphics.drawPolygon(this.polyOfViewLeft2.points);
     }
     else {
-      this.graphics.beginFill(0xFF33ff);
+      this.graphics.beginFill(0xFFFFff);
       this.graphics.drawPolygon(this.polyOfViewRight.points);
       this.graphics.beginFill(0xFFFFff);
       this.graphics.drawPolygon(this.polyOfViewRight2.points);

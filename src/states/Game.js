@@ -56,7 +56,7 @@ export default class extends Phaser.State {
 
     this.addKeyDoorPair(this.game.width * 0.4, 300, this.genNewKey(this.game.width * 0.2, 300));
     this.addKeyDoorPair(this.game.width * 0.62, 200, this.genNewKey(this.game.width * 0.55, 300));
- 
+
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -65,7 +65,9 @@ export default class extends Phaser.State {
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
     this.killButtonFlag = true;
 
-
+    this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
+    this.lightSprite = this.game.add.image(this.game.camera.x, this.game.camera.y, this.shadowTexture);
+    this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
   }
 
   addNewEnemy(posX, posY) {
@@ -77,13 +79,57 @@ export default class extends Phaser.State {
       asset: 'enemy',
       layer: this.layer
     }));
-
-
-    console.log('enemy created');
   }
 
+  update() {
 
-  addKeyDoorPair(doorPosX, doorPosY, corrKey){
+    this.game.physics.arcade.collide(this.player, this.layer);
+    this.game.physics.arcade.collide(this.enemies, this.layer);
+    this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    this.game.physics.arcade.collide(this.doors, this.layer);
+    this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
+    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
+
+    this.enemies.setAll('body.immovable', true);
+
+    this.player.body.velocity.x = 0;
+    this.movementPlayer();
+
+    this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
+    this.updateShadowTexture();
+
+  }
+
+  updateShadowTexture() {
+
+    this.shadowTexture.context.fillStyle = 'rgb(10, 10, 10)';
+    this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
+
+    var radius = 100 + this.game.rnd.integerInRange(1, 5),
+      heroX = this.player.x - this.game.camera.x,
+      heroY = this.player.y - this.game.camera.y;
+
+    var gradient = this.shadowTexture.context.createRadialGradient(
+      heroX, heroY, 100 * 0.75,
+      heroX, heroY, radius);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+
+    this.shadowTexture.context.beginPath();
+    this.shadowTexture.context.fillStyle = gradient;
+    this.shadowTexture.context.arc(heroX, heroY, radius, 0, Math.PI * 2, false);
+    this.shadowTexture.context.fill();
+
+    this.shadowTexture.dirty = true;
+  }
+
+  key_collector(player, key) {
+    key.kill();
+    player.inventory.push(key);
+  }
+
+  addKeyDoorPair(doorPosX, doorPosY, corrKey) {
 
     this.doors.add(new Door({
       game: this.game,
@@ -97,8 +143,8 @@ export default class extends Phaser.State {
 
   }
 
-  genNewKey(posX, posY){
-   return new Key({
+  genNewKey(posX, posY) {
+    return new Key({
       game: this.game,
       x: posX,
       y: posY,
@@ -106,42 +152,8 @@ export default class extends Phaser.State {
     }, this.keyIdCounter++);
   }
 
-
-
-
-  genRandomSpawnPoint(){
-      return this.game.rnd.integerInRange(16, this.game.width - 16);
-  }
-
-
-
-  
-
-  update() {
-
-    // console.log(this.map.getTileWorldXY( this.player.x, this.player.y - 50, 'Tile Layer 1' ));
-    this.game.physics.arcade.collide(this.player, this.layer);
-    this.game.physics.arcade.collide(this.enemies, this.layer);
-    this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
-    this.game.physics.arcade.collide(this.doors, this.layer);
-    this.game.physics.arcade.collide(this.keys, this.layer);
-    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
-    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
-
-    this.enemies.setAll('body.immovable', true);
-    // this.enemy.body.immovable = true;
-
-    this.player.body.velocity.x = 0;
-    this.movementPlayer();
-
-  }
-
-  key_collector(player, key) {
-    key.kill();
-    player.inventory.push(key);
-  }
-
-  render() {
+  genRandomSpawnPoint() {
+    return this.game.rnd.integerInRange(16, this.game.width - 16);
   }
 
   movementPlayer() {
@@ -217,5 +229,8 @@ export default class extends Phaser.State {
 
   simpleCollision(player, enemy) {
     enemy.body.velocity.x = 0;
+  }
+
+  render() {
   }
 }
