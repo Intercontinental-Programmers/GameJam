@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-    constructor({ game, x, y, asset}) {
+    constructor({ game, x, y, asset, height }) {
         super(game, x, y, asset);
         this
             .anchor
@@ -11,8 +11,8 @@ export default class extends Phaser.Sprite {
             .physics
             .enable(this, Phaser.Physics.ARCADE);
 
-        //this.enableBody = true;
         this.body.immovable = true;
+        this.body.height = height;
         this.body.collideWorldBounds = true;
     }
 }
