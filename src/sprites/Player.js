@@ -13,9 +13,11 @@ export default class extends Phaser.Sprite {
 
         this.timeToStep = this.game.time.now;
         this.layer = layer;
-        this
-            .animations
-            .add('left', [
+        //coordinates to check if polyView of Enemy contains Player
+        //(x,y)
+        this.coordinates = [[this.x - 18.25, this.y + 22], [this.x + 18.25, this.y + 22], [this.x - 18.25, this.y - 22], [this.x + 18.25 , this.y + 22]];
+        this.animations
+        .add('left',[
                 0, 1, 2, 3
             ], 10, true);
         this
@@ -55,7 +57,6 @@ export default class extends Phaser.Sprite {
     moveLeft() {
 
         this.body.velocity.x = -this.speed;
-
         if (!this.sneking) {
             this
                 .animations
@@ -129,5 +130,18 @@ export default class extends Phaser.Sprite {
                 console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
             }
         }
+    }
+
+    updateXCoordinate(){
+        this.coordinates[0][0] = this.x - 18.25;
+        this.coordinates[1][0] = this.x + 18.25;
+        this.coordinates[2][0] = this.x - 18.25;
+        this.coordinates[3][0] = this.x + 18.25;
+    }
+    updateYCoordinate(){
+        this.coordinates[0][1] = this.y + 22;
+        this.coordinates[1][1] = this.y + 22;
+        this.coordinates[2][1] = this.y - 22;
+        this.coordinates[3][1] = this.y - 22;
     }
 }

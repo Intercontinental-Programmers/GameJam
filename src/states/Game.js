@@ -78,7 +78,8 @@ export default class extends Phaser.State {
       x: posX,
       y: posY,
       asset: 'enemy',
-      layer: this.layer
+      layer: this.layer,
+      player: this.player
     }));
   }
 
@@ -123,6 +124,14 @@ export default class extends Phaser.State {
     this.shadowTexture.context.fill();
 
     this.shadowTexture.dirty = true;
+    this.player.updateXCoordinate();
+    this.player.updateYCoordinate();
+    this.enemies.forEach(enemy => {
+      if(enemy.detectPlayer()){
+        this.state.start('GameOver');
+      }
+    });
+    
   }
 
   key_collector(player, key) {
