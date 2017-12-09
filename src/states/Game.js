@@ -39,17 +39,13 @@ export default class extends Phaser.State {
     
     this.game.add.existing(this.player);
 
-    //ENEMY
-    this.enemy = new Enemy({
-      game: this.game,
-      x: this.world.centerX,
-      y: this.world.centerY,
-      asset: 'enemy'
-    })
-    
-   
-    this.game.add.existing(this.enemy);
-
+    //ENEMIES
+    this.enemies = this.game.add.group();
+    this.addNewEnemy(this.game.width * 0.1, 300);
+    this.addNewEnemy(this.game.width * 0.3, 300);
+    this.addNewEnemy(this.game.width * 0.45, 300);
+    this.addNewEnemy(this.game.width * 0.7, 300);
+    this.addNewEnemy(this.game.width * 0.9, 300);
 
 
     //GAME CAMERA, CURSORS
@@ -61,12 +57,30 @@ export default class extends Phaser.State {
     this.killButtonFlag = true;
   }
 
+  addNewEnemy(posX, posY){
+
+    this.enemies.add(new Enemy({
+      game: this.game,
+      x: posX,
+      y: posY,
+      asset: 'enemy'
+    }));
+
+    console.log('enemy created');
+  }
+
+  genRandomSpawnPoint(){
+      return this.game.rnd.integerInRange(16, this.game.width - 16);
+  }
+
   update() {
 
     this.game.physics.arcade.collide(this.player, this.layer);
-    this.game.physics.arcade.collide(this.enemy, this.layer);
-    this.game.physics.arcade.collide(this.player, this.enemy, this.simpleCollision);
-    this.enemy.body.immovable = true;
+    this.game.physics.arcade.collide(this.enemies, this.layer);
+    this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+
+    this.enemies.setAll('body.immovable', true);
+    // this.enemy.body.immovable = true;
   
     this.player.body.velocity.x = 0;
     this.movementPlayer();
@@ -103,18 +117,26 @@ export default class extends Phaser.State {
       
       if(this.killButtonFlag){
         //probably requires refactor
-        if(Math.abs(this.player.x - this.enemy.x) < 50){
 
-          if(this.lookingAtEnemy(this.player, this.enemy)){
-            console.log('zabiles typa');
+        this.enemies.forEach(enemy => {
+
+          if(Math.abs(this.player.x - enemy.x) < 50){
+            
+            if(this.lookingAtEnemy(this.player, enemy)){
+               console.log('zabiles typa');
+               enemy.kill();
+            }
+            else{
+               console.log('nie zabiles typa');
+            }
           }
           else{
-            console.log('nie zabiles typa');
+              console.log('nie zabiles typa')
           }
-        }
-        else{
-            console.log('nie zabiles typa')
-        }
+        
+
+        })
+       
         this.killButtonFlag = false;
       }
     }
@@ -122,9 +144,6 @@ export default class extends Phaser.State {
     if(this.killButton.isUp){
       this.killButtonFlag = true;
     }
-    
-
-      
   }
 
   //probably requires refactor
