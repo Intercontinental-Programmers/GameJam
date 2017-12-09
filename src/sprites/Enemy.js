@@ -1,18 +1,12 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-  constructor({game, x, y, asset}) {
+  constructor({ game, x, y, asset }) {
     super(game, x, y, asset),
-    this
-      .anchor
-      .setTo(0.5),
-    this
-      .game
-      .physics
-      .arcade
-      .enable(this),
-    //this.enableBody = true,
-    this.timeToStep = this.game.time.now;
+      this.anchor.setTo(0.5),
+      this.game.physics.arcade.enable(this),
+      //this.enableBody = true,
+      this.timeToStep = this.game.time.now;
 
     //this init graphic for polygon
     this.graphics = this.game.add.graphics(0, 0);
@@ -27,61 +21,45 @@ export default class extends Phaser.Sprite {
     // direction to move
     this.moveLeft = 1;
     this.moveRight = 0;
-    this.polyOfViewRight = new Phaser.Polygon([
-      new Phaser.Point(this.x, this.y - 23),
-      new Phaser.Point(this.x + 100, this.y - 48),
-      new Phaser.Point(this.x + 100, this.y + 25)
-    ]);
-    this.polyOfViewLeft = new Phaser.Polygon([
-      new Phaser.Point(this.x, this.y - 25),
-      new Phaser.Point(this.x - 100, this.y - 48),
-      new Phaser.Point(this.x - 100, this.y + 25)
-    ]);
 
-    this.polyOfViewRight2 = new Phaser.Polygon([
-      new Phaser.Point(this.x-9, this.y - 10),
-      new Phaser.Point(this.x + 66.7, this.y - 24.35),
-      new Phaser.Point(this.x + 66.7, this.y + 24.35)
-    ]);
-
-    this.polyOfViewLeft2 = new Phaser.Polygon([
-      new Phaser.Point(this.x-9, this.y - 10),
-      new Phaser.Point(this.x - 66.7, this.y - 24.35),
-      new Phaser.Point(this.x - 66.7, this.y + 24.35)
-    ]);
-
+    this.timeToStep = this.game.time.now;
+    this
+      .animations
+      .add('left', [
+        0, 1, 2, 3
+      ], 10, true);
+    this
+      .animations
+      .add('turn', [4], 20, true);
+    this
+      .animations
+      .add('right', [
+        5, 6, 7, 8
+      ], 10, true);
+    this.body.velocity.x = 0;
+    this.facing = 'idle';
+    this.jumpTimer = this.game.time.now;
   }
 
   wander() {
     if (this.moveLeft === 1) {
+      console.log("Ruszam sie w lewo");
       this.body.velocity.x = -this.speed;
       this.moveLeft = 0;
       this.moveRight = 1;
-    } else if (this.moveRight === 1) {
+      this
+        .animations
+        .play('left');
+    }
+    else if (this.moveRight === 1) {
+      console.log("Ruszam sie w prawo");
       this.body.velocity.x = this.speed;
       this.moveRight = 0;
       this.moveLeft = 1;
+      this
+        .animations
+        .play('right');
     }
-  }
-
-  drawView() {
-    
-    
-
-    this.graphics.beginFill(0xFF33ff);
-    if(this.moveLeft === 0){
-      this.graphics.drawPolygon(this.polyOfViewLeft.points);
-      this.graphics.beginFill(0xFFFFff);
-      this.graphics.drawPolygon(this.polyOfViewLeft2.points);
-    }
-    else{
-      this.graphics.beginFill(0xFF33ff);
-      this.graphics.drawPolygon(this.polyOfViewRight.points);
-      this.graphics.beginFill(0xFFFFff);
-      this.graphics.drawPolygon(this.polyOfViewRight2.points);
-    }
-
-    this.graphics.endFill();
   }
 
   update() {
@@ -93,35 +71,6 @@ export default class extends Phaser.Sprite {
       this.timeToStep = this.game.time.now;
       this.wander();
     }
-
-
-    this.polyOfViewRight = new Phaser.Polygon([
-      new Phaser.Point(this.x-9, this.y - 10),
-      new Phaser.Point(this.x + 100, this.y - 47),
-      new Phaser.Point(this.x + 100, this.y + 25)
-    ]);
-
-    this.polyOfViewRight2 = new Phaser.Polygon([
-      new Phaser.Point(this.x-9, this.y - 10),
-      new Phaser.Point(this.x + 66.7, this.y - 36.35),
-      new Phaser.Point(this.x + 66.7, this.y + 14.95)
-    ]);
-
-    this.polyOfViewLeft2 = new Phaser.Polygon([
-      new Phaser.Point(this.x-9, this.y - 10),
-      new Phaser.Point(this.x - 80.7, this.y - 34.35),
-      new Phaser.Point(this.x - 80.7, this.y + 13.30)
-    ]);
-
-    this.polyOfViewLeft = new Phaser.Polygon([
-      new Phaser.Point(this.x-9, this.y - 10),
-      new Phaser.Point(this.x - 120, this.y - 47),
-      new Phaser.Point(this.x - 120, this.y + 26)
-    ]);
-    this.graphics.clear();
-    this.drawView();
-
-
 
   }
 }
