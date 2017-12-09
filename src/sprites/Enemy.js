@@ -47,4 +47,19 @@ export default class extends Phaser.Sprite {
     }
       
   }
+
+  stop() {
+    this
+        .animations
+        .stop();
+
+    if (this.facing == 'left') {
+        this.frame = 0;
+    } else {
+        this.frame = 5;
+    }
+
+    this.facing = 'idle';
+  }
+
 }
