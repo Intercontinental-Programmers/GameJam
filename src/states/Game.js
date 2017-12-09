@@ -51,8 +51,8 @@ export default class extends Phaser.State {
     //KEY
     this.key = new Key({
       game: this.game,
-      x: this.world.centerX,
-      y: this.world.centerY,
+      x: this.world.centerX - 50,
+      y: this.world.centerY - 50,
       asset: 'droid'
     }, 1);
     this.game.add.existing(this.key);
@@ -76,6 +76,8 @@ export default class extends Phaser.State {
 
     this.player.body.velocity.x = 0;
     this.movementPlayer();
+
+    console.log(this.player.equipment);
 
   }
 
@@ -102,11 +104,10 @@ export default class extends Phaser.State {
     }
   }
 
-  keyOverlapHandler(player, key)
+  keyOverlapHandler(key, player)
   {
-      var newKey = Object.assign({}, key);
       key.kill();
-      player.addToEquipment(newKey);
+      player.addToEquipment(key);
   }
 
 }
