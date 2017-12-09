@@ -116,15 +116,16 @@ export default class extends Phaser.State {
     if(this.killButton.isDown){
       
       if(this.killButtonFlag){
-        //probably requires refactor
+        
 
         this.enemies.forEach(enemy => {
-
+          //probably requires refactor
           if(Math.abs(this.player.x - enemy.x) < 50){
             
             if(this.lookingAtEnemy(this.player, enemy)){
                console.log('zabiles typa');
-               enemy.kill();
+               enemy.killEnemy();
+               this.enemies.remove(enemy);
             }
             else{
                console.log('nie zabiles typa');
@@ -133,8 +134,6 @@ export default class extends Phaser.State {
           else{
               console.log('nie zabiles typa')
           }
-        
-
         })
        
         this.killButtonFlag = false;
