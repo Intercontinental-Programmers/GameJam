@@ -2,11 +2,14 @@ import Phaser from 'phaser'
 import Mushroom from '../sprites/Mushroom'
 import Enemy from '../sprites/Enemy'
 import Player from '../sprites/Player'
+import Door from '../sprites/Door'
+import Key from '../sprites/Key'
 
 export default class extends Phaser.State {
 
   constructor() {
     super()
+    this.key_counter = 0;
   }
 
   init() { }
@@ -47,6 +50,33 @@ export default class extends Phaser.State {
     this.addNewEnemy(this.game.width * 0.7, 300);
     this.addNewEnemy(this.game.width * 0.9, 300);
 
+    //ENEMY
+    this.enemy = new Enemy({
+      game: this.game,
+      x: this.world.centerX,
+      y: this.world.centerY,
+      asset: 'dude'
+    })
+    this.game.add.existing(this.enemy);
+
+    //KEY
+    this.key = new Key({
+      game: this.game,
+      x: this.world.centerX - 200,
+      y: this.world.centerY - 50,
+      asset: 'droid'
+    }, 1);
+    this.game.add.existing(this.key);
+
+    //DOOR
+    this.door = new Door({
+      game: this.game,
+      x: this.world.centerX + -400,
+      y: this.world.centerY,
+      asset: 'dude',
+      key: this.key
+    })
+    this.game.add.existing(this.door);
 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
@@ -78,6 +108,11 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    //this.game.physics.arcade.collide(this.enemy, this.layer);
+    this.game.physics.arcade.collide(this.door, this.layer);
+    this.game.physics.arcade.collide(this.key, this.layer);
+    this.game.physics.arcade.collide(this.player, this.door, this.door.unlockDoor);
+    this.game.physics.arcade.overlap(this.player, this.key, this.key_collector, null, this);
 
     this.enemies.setAll('body.immovable', true);
     // this.enemy.body.immovable = true;
@@ -85,11 +120,14 @@ export default class extends Phaser.State {
     this.player.body.velocity.x = 0;
     this.movementPlayer();
     
+  }
 
+  key_collector(player, key) {
+    key.kill();
+    player.inventory.push(key);
   }
 
   render() {
-
   }
 
   movementPlayer() {

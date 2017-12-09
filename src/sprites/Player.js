@@ -38,6 +38,7 @@ export default class extends Phaser.Sprite {
         this.body.velocity.x = 0;
         this.jumpTimer = this.game.time.now;
         this.sneking = 0;
+        this.inventory = [];
     }
 
     moveLeft() {
