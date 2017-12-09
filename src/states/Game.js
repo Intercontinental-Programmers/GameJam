@@ -44,22 +44,22 @@ export default class extends Phaser.State {
     this.game.add.existing(this.player);
 
     //LADDER
-    this.ladder = new Ladder({ game: this.game, x: 150, y: 50, asset: 'mushroom', layer: this.layer })
+    this.ladder = new Ladder({ game: this.game, x: 1230, y: 300, asset: '', height: 800, layer: this.layer })
     this.game.add.existing(this.ladder);
 
     //ENEMIES
     this.enemies = this.game.add.group();
     this.addNewEnemy(200, 100);
     this.addNewEnemy(1000, 300);
-    this.addNewEnemy(800, 500);
+    this.addNewEnemy(800, 550);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
     this.keys = this.game.add.group();
     this.keyIdCounter = 0;
 
-    this.addKeyDoorPair(630, 300, this.genNewKey(1100, 300));
-    this.addKeyDoorPair(825, 500, this.genNewKey(25, 300));
+    this.addKeyDoorPair(630, 300, this.genNewKey(850, 100));
+    this.addKeyDoorPair(825, 550, this.genNewKey(25, 300));
 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
@@ -145,7 +145,7 @@ export default class extends Phaser.State {
 
   updateShadowTexture() {
 
-    this.shadowTexture.context.fillStyle = 'rgb(10, 10, 10)';
+    this.shadowTexture.context.fillStyle = 'rgb(2, 2, 2)';
     this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
 
     var radius = 100 + this.game.rnd.integerInRange(1, 5),
