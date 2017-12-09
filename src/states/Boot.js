@@ -21,12 +21,12 @@ export default class extends Phaser.State {
 
     this.load.image('loaderBg', './assets/images/loader-bg.png')
     this.load.image('loaderBar', './assets/images/loader-bar.png')
-    
+
   }
 
   render () {
     if (this.fontsReady) {
-      this.state.start('Splash')
+      this.state.start('StageMenu')
     }
   }
 
