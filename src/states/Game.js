@@ -5,11 +5,15 @@ import Player from '../sprites/Player'
 import Door from '../sprites/Door'
 import Key from '../sprites/Key'
 
+
+
 export default class extends Phaser.State {
 
   constructor() {
     super()
     this.key_counter = 0;
+    this.CHASING_TIME = 4000;
+    window.playerDetected = false;
   }
 
   init() { }
@@ -35,6 +39,7 @@ export default class extends Phaser.State {
     }
 
 
+
     //PLAYER
     this.player = new Player({
       game: this.game,
@@ -47,8 +52,9 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(this.game.width * 0.4, 100);
+    // this.addNewEnemy(this.game.width * 0.4, 100);
     this.addNewEnemy(this.game.width * 0.6, 100);
+    this.addNewEnemy(this.game.width * 0.65, 100);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -69,6 +75,8 @@ export default class extends Phaser.State {
     this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
     this.lightSprite = this.game.add.image(this.game.camera.x, this.game.camera.y, this.shadowTexture);
     this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
+
+    
   }
 
   addNewEnemy(posX, posY) {
@@ -81,8 +89,13 @@ export default class extends Phaser.State {
       layer: this.layer,
       player: this.player
     }));
+    // przekazanie jakiegos shared Object do Enemy
+    // osobny modul z servisem do komunikacji - modul sharedGameState
+    //
   }
 
+
+ 
   update() {
 
     this.game.physics.arcade.collide(this.player, this.layer);
@@ -101,13 +114,26 @@ export default class extends Phaser.State {
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.updateShadowTexture();
 
+    
+
     this.enemies.forEach(enemy => {
       if(enemy.detectPlayer()){
-        // this.state.start('GameOver');
+        
         console.log('wykryto cie');
+        window.playerDetected = true;
+        this.detectionTime = Date.now();
       }
     });
 
+    if(this.checkTime()){
+      window.playerDetected = false;
+    }
+
+
+  }
+
+  checkTime(){
+    return (Date.now() - this.detectionTime) > this.CHASING_TIME;
   }
 
   updateShadowTexture() {

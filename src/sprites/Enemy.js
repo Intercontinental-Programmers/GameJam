@@ -1,7 +1,8 @@
-import Phaser from 'phaser'
+import Phaser from 'phaser';
+
 
 export default class extends Phaser.Sprite {
-  constructor({ game, x, y, asset,layer, player}) {
+  constructor({ game, x, y, asset,layer, player, sharedState}) {
     super(game, x, y, asset),
       this
         .anchor
@@ -21,13 +22,12 @@ export default class extends Phaser.Sprite {
     //speed of movement
     this.SPEED = 70;
     //modes
-    this.attackMode = 0;
-    this.wanderMode = 1;
-    this.watchMode = 0; // staying in one place
+    // this.attackMode = 0;
+    // this.wanderMode = 1;
+    // this.watchMode = 0; // staying in one place
+    this.state = 0;
 
-    // direction to move
-    this.moveLeft = 1;
-    this.moveRight = 0;
+    this.sharedState = sharedState;
 
     this.timeToStep = this.game.time.now;
     this.lastSwitchDirection = this.game.time.now;
@@ -82,12 +82,10 @@ export default class extends Phaser.Sprite {
     //if elapsed time < generated time
     if(this.checkTime()){
       if(this.facing == 'left'){
-        this.body.velocity.x = -this.SPEED;
-        this.animations.play('left');
+        this.moveLeft();
       }
       else{
-        this.body.velocity.x = this.SPEED;
-        this.animations.play('right');
+        this.moveRight();
       }
     }
     //else we reset the timer and switch direction
@@ -96,8 +94,33 @@ export default class extends Phaser.Sprite {
     }
   }
 
-  detectPlayer() {
+  moveLeft(){
+    // this.facing = 'left';
+    this.body.velocity.x  = -this.SPEED;
+    this.animations.play('left');
+  }
 
+  moveRight(){
+    // this.facing = 'right';
+    this.body.velocity.x  = this.SPEED;
+    this.animations.play('right');
+  }
+
+  chasePlayer() {
+
+    if(this.player.body.x < this.body.x){
+      this.facing = 'left';
+      this.moveLeft();
+    }
+    else{
+      this.facing = 'right';
+      this.moveRight();
+    }
+  }
+
+  checkDistance(){
+
+    return Math.sqrt(Math.pow(this.player.body.x - this.body.x, 2) + Math.pow(this.player.body.y - this.body.y, 2)) < 400;
   }
 
   checkTime(){
@@ -128,9 +151,17 @@ export default class extends Phaser.Sprite {
 
   update() {
   
-    this.wander();
+    console.log(window.playerDetected);
+
+    if(!window.playerDetected){
+      this.wander();
+    }
+    else{
+      this.chasePlayer();
+    }
+
     this.checkEdge();
- 
+
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x + 10, this.y - 20),
       new Phaser.Point(this.x + 120, this.y - 45.8),
@@ -156,7 +187,6 @@ export default class extends Phaser.Sprite {
     ]);
     this.graphics.clear();
     this.drawView();
-
   }
 
   drawView(){
@@ -237,7 +267,6 @@ export default class extends Phaser.Sprite {
 
   checkEdge(){
 
-    // console.log("Layer: " + this.layer);
     
     if(this.layer.getTiles(this.x -15, this.y +25, 30, 10,true).length == 1 && this.game.time.now- this.lastSwitchDirection >200)
       {
