@@ -25,7 +25,7 @@ export default class extends Phaser.State {
     this.map.setCollisionByExclusion([13, 14, 15, 16, 46, 47, 48, 49, 50, 51]);
     this.layer = this.map.createLayer('Tile Layer 1');
     this.layer.resizeWorld();
-    this.game.physics.arcade.gravity.y = 520;
+    this.game.physics.arcade.gravity.y = 800;
 
     //PLAYER
     this.player = new Player({
