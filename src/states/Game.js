@@ -73,6 +73,8 @@ export default class extends Phaser.State {
     this.lightSprite = this.game.add.image(this.game.camera.x, this.game.camera.y, this.shadowTexture);
     this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
 
+    //TIME
+    this.game.time.events.add(Phaser.Timer.SECOND * 50, this.game_over, this);
   }
 
   addNewEnemy(posX, posY) {
@@ -85,7 +87,7 @@ export default class extends Phaser.State {
       layer: this.layer,
       player: this.player
     }));
-  
+
   }
 
   update() {
@@ -106,11 +108,11 @@ export default class extends Phaser.State {
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.updateShadowTexture();
 
-    
-   
+
+
     this.enemies.forEach(enemy => {
-      if(enemy.detectPlayer()){
-    
+      if (enemy.detectPlayer()) {
+
         window.playerDetected = true;
         this.seen = true;
         this.timeUnseen = Date.now();
@@ -118,27 +120,27 @@ export default class extends Phaser.State {
     });
 
 
-    if(!this.seen){
-      this.timeSeen = Date.now();  
+    if (!this.seen) {
+      this.timeSeen = Date.now();
     }
 
-    if(this.checkTimeUndetected()){
+    if (this.checkTimeUndetected()) {
       window.playerDetected = false;
     }
 
-    if(this.checkTimeDetected()){
+    if (this.checkTimeDetected()) {
       this.game.state.start('GameOver');
     }
     this.seen = false;
   }
 
-  checkTimeUndetected(){
+  checkTimeUndetected() {
 
     console.log(Date.now() - this.timeUnseen);
     return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
   }
 
-  checkTimeDetected(){
+  checkTimeDetected() {
     console.log(Date.now() - this.timeSeen);
     return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
   }
@@ -146,7 +148,7 @@ export default class extends Phaser.State {
   updateShadowTexture() {
 
     this.shadowTexture.context.fillStyle = 'rgb(2, 2, 2)';
-    this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
+    //this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
 
     var radius = 100 + this.game.rnd.integerInRange(1, 5),
       heroX = this.player.x - this.game.camera.x,
@@ -285,6 +287,11 @@ export default class extends Phaser.State {
     this.map.setCollisionBetween(1516, 1539);
   }
 
+  game_over() {
+    this.game.state.start('GameOver');
+  }
+
   render() {
+    this.game.debug.text("Time left: " + game.time.events.duration, 32, 32);
   }
 }
