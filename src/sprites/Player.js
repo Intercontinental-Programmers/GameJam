@@ -40,13 +40,13 @@ export default class extends Phaser.Sprite {
             ], 10, true);
         this
             .animations
-            .add('left_upper', [
-                18, 19, 20, 21
+            .add('right_upper', [
+                18, 19, 20, 21, 22, 23
             ], 10, true);
         this
             .animations
-            .add('right_upper', [
-                25, 24, 23, 22
+            .add('left_upper', [
+                29, 28, 27, 26, 25, 24
             ], 10, true);
         this.body.velocity.x = 0;
         this.onLadder = 0;

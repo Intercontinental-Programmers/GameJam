@@ -122,7 +122,7 @@ export default class extends Phaser.State {
 
   updateShadowTexture() {
 
-    this.shadowTexture.context.fillStyle = 'rgb(10, 10, 10)';
+    this.shadowTexture.context.fillStyle = 'rgb(2, 2, 2)';
     this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
 
     var radius = 100 + this.game.rnd.integerInRange(1, 5),
