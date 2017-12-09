@@ -136,12 +136,10 @@ export default class extends Phaser.State {
 
   checkTimeUndetected() {
 
-    console.log(Date.now() - this.timeUnseen);
     return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
   }
 
   checkTimeDetected() {
-    console.log(Date.now() - this.timeSeen);
     return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
   }
 
