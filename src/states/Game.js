@@ -22,17 +22,12 @@ export default class extends Phaser.State {
     this.bg = this.game.add.tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
-    //LOADING MAP
+    this.map = this.game.add.tilemap('level', 16, 16);
+    this.map.addTilesetImage('tiles');
     this.game.physics.arcade.gravity.y = 800;
-    this.tilemap = this.game.add.tilemap('level');
-    this.tilemap.addTilesetImage('tiles-1');
-    this.tilemap.setCollisionByExclusion([13, 14, 15, 16, 46, 47, 48, 49, 50, 51]);
-    this.tilemap.myLayers = [];
-    for (var i = 2; i > 0; i--) {
-      this.layer = this.tilemap.createLayer('layer' + i);
-      this.layer.resizeWorld();
-      this.tilemap.myLayers[i - 1] = this.layer;
-    }
+    this.layer = this.map.createLayer(0);
+    this.add_collisions();
+    this.layer.resizeWorld();
 
 
     //PLAYER
@@ -112,7 +107,7 @@ export default class extends Phaser.State {
       heroY = this.player.y - this.game.camera.y;
 
     var gradient = this.shadowTexture.context.createRadialGradient(
-      heroX, heroY, 100 * 0.75,
+      heroX, heroY, 100 * 0.3,
       heroX, heroY, radius);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
     gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
@@ -230,6 +225,34 @@ export default class extends Phaser.State {
 
   simpleCollision(player, enemy) {
     enemy.body.velocity.x = 0;
+  }
+
+  add_collisions() {
+    this.map.setCollisionBetween(30, 279);
+    this.map.setCollisionBetween(310, 349);
+    this.map.setCollisionBetween(380, 419);
+    this.map.setCollisionBetween(450, 484);
+    this.map.setCollisionBetween(520, 559);
+    this.map.setCollisionBetween(606, 629);
+    this.map.setCollisionBetween(676, 699);
+    this.map.setCollisionBetween(736, 769);
+    this.map.setCollisionBetween(806, 839);
+    this.map.setCollisionBetween(876, 909);
+    this.map.setCollisionBetween(946, 974);
+    this.map.setCollisionBetween(1016, 1049);
+    this.map.setCollisionBetween(1086, 1119);
+    this.map.setCollisionBetween(1750, 1767);
+    this.map.setCollisionBetween(1734, 1749);
+    this.map.setCollisionBetween(1804, 1819);
+    this.map.setCollisionBetween(1874, 1889);
+    this.map.setCollisionBetween(1944, 1951);
+    this.map.setCollisionBetween(2018, 2029);
+    this.map.setCollisionBetween(1166, 1189);
+    this.map.setCollisionBetween(1236, 1259);
+    this.map.setCollisionBetween(1306, 1329);
+    this.map.setCollisionBetween(1376, 1399);
+    this.map.setCollisionBetween(1446, 1469);
+    this.map.setCollisionBetween(1516, 1539);
   }
 
   render() {
