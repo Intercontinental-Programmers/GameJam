@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-    constructor({game, x, y, asset}) {
+    constructor({ game, x, y, asset }) {
         super(game, x, y, asset);
         this
             .anchor
@@ -28,7 +28,7 @@ export default class extends Phaser.Sprite {
         this.body.velocity.x = 0;
         this.facing = 'idle';
         this.jumpTimer = this.game.time.now;
-
+        this.inventory = [];
     }
 
     moveLeft() {
@@ -69,14 +69,14 @@ export default class extends Phaser.Sprite {
     }
 
 
-    jump(){
+    jump() {
 
-        if(this.body.onFloor()){
+        if (this.body.onFloor()) {
             this.body.velocity.y = -250;
             this.jumpTimer = this.game.time.now;
         }
 
     }
 
-    update() {}
+    update() { }
 }
