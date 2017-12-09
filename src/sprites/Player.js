@@ -136,7 +136,6 @@ export default class extends Phaser.Sprite {
     setDefaultSpeed(){
         if(this.body.onFloor){
             this.setOnLadder(0);
-            console.log("nie jestem na drabinie");
         }
         this.speed = 150;
     }

@@ -150,8 +150,6 @@ export default class extends Phaser.Sprite {
   }
 
   update() {
-  
-    console.log(window.playerDetected);
 
     if(!window.playerDetected){
       this.wander();

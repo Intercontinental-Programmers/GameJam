@@ -14,6 +14,7 @@ export default class extends Phaser.State {
     super()
     this.key_counter = 0;
     this.CHASING_TIME = 4000;
+    this.GAME_OVER_TIME = 2000;
     window.playerDetected = false;
   }
 
@@ -153,9 +154,7 @@ export default class extends Phaser.State {
       layer: this.layer,
       player: this.player
     }));
-    // przekazanie jakiegos shared Object do Enemy
-    // osobny modul z servisem do komunikacji - modul sharedGameState
-    //
+  
   }
 
 
@@ -217,25 +216,33 @@ export default class extends Phaser.State {
     this.updateShadowTexture();
 
     
-
+   
     this.enemies.forEach(enemy => {
       if(enemy.detectPlayer()){
-        
-        console.log('wykryto cie');
+        console.log('wykryto cie')
         window.playerDetected = true;
-        this.detectionTime = Date.now();
+        this.timeUnseen = Date.now();
+      }
+      else{
+        this.timeSeen = Date.now();
       }
     });
 
-    if(this.checkTime()){
+    if(this.checkTimeUndetected()){
       window.playerDetected = false;
     }
-
-
+    if(this.checkTimeDetected()){
+      this.game.state.start('GameOver');
+    }
   }
 
-  checkTime(){
-    return (Date.now() - this.detectionTime) > this.CHASING_TIME;
+  checkTimeUndetected(){
+
+    return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
+  }
+
+  checkTimeDetected(){
+    return (Date.now() - this.timeUnderPursuit) > this.GAME_OVER_TIME;
   }
 
   updateShadowTexture() {
