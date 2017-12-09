@@ -1,12 +1,12 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-  constructor ({ game, x, y, asset }) {
+  constructor({ game, x, y, asset }) {
     super(game, x, y, asset),
-    this.anchor.setTo(0.5),
-    this.game.physics.arcade.enable(this),
-    //this.enableBody = true,
-    this.timeToStep = this.game.time.now;
+      this.anchor.setTo(0.5),
+      this.game.physics.arcade.enable(this),
+      //this.enableBody = true,
+      this.timeToStep = this.game.time.now;
 
     //speed of movement 
     this.speed = 70;
@@ -18,33 +18,57 @@ export default class extends Phaser.Sprite {
     // direction to move
     this.moveLeft = 1;
     this.moveRight = 0;
+
+    this.timeToStep = this.game.time.now;
+    this
+      .animations
+      .add('left', [
+        0, 1, 2, 3
+      ], 10, true);
+    this
+      .animations
+      .add('turn', [4], 20, true);
+    this
+      .animations
+      .add('right', [
+        5, 6, 7, 8
+      ], 10, true);
+    this.body.velocity.x = 0;
+    this.facing = 'idle';
+    this.jumpTimer = this.game.time.now;
   }
 
-  wander () {
-    if(this.moveLeft === 1){
+  wander() {
+    if (this.moveLeft === 1) {
       console.log("Ruszam sie w lewo");
       this.body.velocity.x = -this.speed;
       this.moveLeft = 0;
       this.moveRight = 1;
+      this
+        .animations
+        .play('left');
     }
-    else if(this.moveRight === 1){
+    else if (this.moveRight === 1) {
       console.log("Ruszam sie w prawo");
       this.body.velocity.x = this.speed;
       this.moveRight = 0;
       this.moveLeft = 1;
+      this
+        .animations
+        .play('right');
     }
   }
 
-  update () {
+  update() {
     //delta of time
     this.diff_time = this.game.time.now - this.timeToStep;
     //console.log(this.diff_time);
-    if(this.wanderMode === 1 && this.diff_time > 2000){
+    if (this.wanderMode === 1 && this.diff_time > 2000) {
       //this.body.velocity.setTo(0, 0);
       this.timeToStep = this.game.time.now;
       console.log('poruszam sie w ' + this.moveLeft + "L" + "   " + this.moveRight + "R");
       this.wander();
     }
-      
+
   }
 }
