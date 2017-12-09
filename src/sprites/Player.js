@@ -93,7 +93,6 @@ export default class extends Phaser.Sprite {
         this.body.velocity.y -= 55;
     }
     moveDown() {
-
         this.body.velocity.y += 55;
     }
 
@@ -121,7 +120,6 @@ export default class extends Phaser.Sprite {
             this.speed = 50;
 
         this.checkEdge();
-        this.setDefaultSpeed();
         this.checkLadder();
     }
 
@@ -131,12 +129,6 @@ export default class extends Phaser.Sprite {
         }
     }
 
-    setDefaultSpeed() {
-        if (this.body.onFloor) {
-            this.setOnLadder(0);
-        }
-        this.speed = 150;
-    }
     checkEdge() {
 
         // console.log("Layer: " + this.layer);
