@@ -38,28 +38,27 @@ export default class extends Phaser.State {
     this.add_collisions();
     this.layer.resizeWorld();
 
-
-
     //PLAYER
     this.player = new Player({ game: this.game, x: 50, y: 50, asset: 'dude', layer: this.layer })
     this.game.add.existing(this.player);
 
-    //Ladder
+    //LADDER
     this.ladder = new Ladder({ game: this.game, x: 150, y: 50, asset: 'mushroom', layer: this.layer })
     this.game.add.existing(this.ladder);
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(this.game.width * 0.6, 100);
-    this.addNewEnemy(this.game.width * 0.65, 100);
+    this.addNewEnemy(370, 300);
+    this.addNewEnemy(1000, 300);
+    this.addNewEnemy(800, 500);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
     this.keys = this.game.add.group();
     this.keyIdCounter = 0;
 
-    this.addKeyDoorPair(this.game.width * 0.4, 300, this.genNewKey(this.game.width * 0.2, 300));
-    this.addKeyDoorPair(this.game.width * 0.62, 200, this.genNewKey(this.game.width * 0.55, 300));
+    this.addKeyDoorPair(630, 300, this.genNewKey(1100, 300));
+    this.addKeyDoorPair(825, 500, this.genNewKey(25, 300));
 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
@@ -93,18 +92,16 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.enemies, this.doors);
     this.game.physics.arcade.collide(this.ladder, this.layer);
     this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
     this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
 
     this.enemies.setAll('body.immovable', true);
-
     this.player.body.velocity.x = 0;
     this.movementPlayer();
-
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.updateShadowTexture();
-
 
     this.enemies.forEach(enemy => {
       if (enemy.detectPlayer()) {
@@ -113,7 +110,6 @@ export default class extends Phaser.State {
         this.detectionTime = Date.now();
       }
     });
-
 
     if (this.checkTime()) {
       window.playerDetected = false;
@@ -157,7 +153,7 @@ export default class extends Phaser.State {
 
   addKeyDoorPair(doorPosX, doorPosY, corrKey) {
 
-    this.doors.add(new Door({ game: this.game, x: doorPosX, y: doorPosY, asset: 'dude', key: corrKey }));
+    this.doors.add(new Door({ game: this.game, x: doorPosX, y: doorPosY, asset: 'door', key: corrKey }));
     this.keys.add(corrKey);
   }
 
@@ -166,12 +162,8 @@ export default class extends Phaser.State {
       game: this.game,
       x: posX,
       y: posY,
-      asset: 'droid'
+      asset: 'key'
     }, this.keyIdCounter++);
-  }
-
-  genRandomSpawnPoint() {
-    return this.game.rnd.integerInRange(16, this.game.width - 16);
   }
 
   movementPlayer() {
