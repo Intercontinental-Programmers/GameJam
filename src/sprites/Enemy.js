@@ -111,7 +111,7 @@ export default class extends Phaser.Sprite {
   chasePlayer() {
 
     if(this.isOnTheSameLevel()){
-      console.log('chasing')
+    
       if(this.player.body.x < this.body.x){
         this.facing = 'left';
         this.runLeft();
