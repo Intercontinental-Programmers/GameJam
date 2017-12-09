@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-    constructor({ game, x, y, asset }) {
+    constructor({game, x, y, asset, layer}) {
         super(game, x, y, asset);
         this
             .anchor
@@ -12,6 +12,7 @@ export default class extends Phaser.Sprite {
             .enable(this, Phaser.Physics.ARCADE);
 
         this.timeToStep = this.game.time.now;
+        this.layer = layer;
         this
             .animations
             .add('left', [
@@ -42,7 +43,7 @@ export default class extends Phaser.Sprite {
     }
 
     moveLeft() {
-        
+
         this.body.velocity.x = -this.speed;
 
         if (!this.sneking) {
@@ -50,8 +51,7 @@ export default class extends Phaser.Sprite {
                 .animations
                 .play('left');
             this.facing = 'left';
-        }
-        else {
+        } else {
             this
                 .animations
                 .play('left_sneak');
@@ -62,14 +62,13 @@ export default class extends Phaser.Sprite {
     moveRight() {
 
         this.body.velocity.x = this.speed;
-        if (!this.sneking){
+        if (!this.sneking) {
             this
                 .animations
                 .play('right');
 
             this.facing = 'right';
-        }
-        else {
+        } else {
             this
                 .animations
                 .play('right_sneak');
@@ -87,7 +86,6 @@ export default class extends Phaser.Sprite {
         this.facing = 'idle';
     }
 
-
     jump() {
 
         if (this.body.onFloor()) {
@@ -97,9 +95,25 @@ export default class extends Phaser.Sprite {
     }
 
     update() {
-        if (!this.sneking)
+        if (!this.sneking) 
             this.speed = 150;
-        else if (this.sneking)
+        else if (this.sneking) 
             this.speed = 50;
+        
+        this.checkEdge();
+    
+    }
+    
+    checkEdge() {
+
+        // console.log("Layer: " + this.layer);
+
+        if (this.layer.getTiles(this.x , this.y + 15, 20, 5, true).length > 0 && this.facing == "right") {
+            this.body.velocity.y = -100;
+            console.log("Right: " + this.layer.getTiles(this.x , this.y + 15, 10,5 , true) );
+        } else if(this.layer.getTiles(this.x-20 , this.y + 15, 20, 5, true).length > 0 && this.facing == "left"){
+            this.body.velocity.y = -100;
+            console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
+        }
     }
 }
