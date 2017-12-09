@@ -214,16 +214,23 @@ export default class extends Phaser.Sprite {
   detectPlayer(){
     if(this.facing == 'left'){
       for(var i = 0; i < 4; i++){
-        if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          console.log("kurwa jest");
+        if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+          //change enemy attitude
+        }
+        else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+          //render game over state
         }
       }
     }
     else{
       for(var i = 0; i < 4; i++){
-        if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          console.log("kurwa jest prawa");
+        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+          //change enemy attitude
         }
+        else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+        //rende game over
+        }
+        
       }
     }
   }
