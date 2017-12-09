@@ -44,7 +44,7 @@ export default class extends Phaser.State {
       game: this.game,
       x: this.world.centerX,
       y: this.world.centerY,
-      asset: 'dude'
+      asset: 'enemy'
     })
     
    
@@ -57,6 +57,7 @@ export default class extends Phaser.State {
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
+    this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
   }
 
   update() {
@@ -86,8 +87,14 @@ export default class extends Phaser.State {
        this.player.stop();
     }
     
+    if (this.sneakyButton.isDown) {
+      this.player.sneaky();
+    }
 
-    if (this.jumpButton.isDown) {
+    if (this.sneakyButton.isUp) {
+      this.player.endOfSneaky();
+    }
+    if (this.jumpButton.isDown ) {
       this.player.jump();
     }
 
