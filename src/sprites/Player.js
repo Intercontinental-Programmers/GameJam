@@ -36,6 +36,16 @@ export default class extends Phaser.Sprite {
             .add('left_sneak', [
                 9, 10, 11, 12
             ], 10, true);
+        this
+            .animations
+            .add('left_upper', [
+                18, 19, 20, 21
+            ], 10, true);
+        this
+            .animations
+            .add('right_upper', [
+                25, 24, 23, 22
+            ], 10, true);
         this.body.velocity.x = 0;
         this.jumpTimer = this.game.time.now;
         this.sneking = 0;
