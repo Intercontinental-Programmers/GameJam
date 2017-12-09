@@ -28,12 +28,14 @@ export default class extends Phaser.Sprite {
         this.body.velocity.x = 0;
         this.facing = 'idle';
         this.jumpTimer = this.game.time.now;
+        this.isSneaky = 0; 
+        this.speed =150;
 
     }
 
     moveLeft() {
 
-        this.body.velocity.x = -150;
+        this.body.velocity.x = -this.speed;
 
         if (this.facing != 'left') {
             this
@@ -44,7 +46,7 @@ export default class extends Phaser.Sprite {
     }
     moveRight() {
 
-        this.body.velocity.x = 150;
+        this.body.velocity.x = this.speed;
 
         if (this.facing != 'right') {
             this
@@ -77,6 +79,17 @@ export default class extends Phaser.Sprite {
         }
 
     }
+
+    sneaky(){
+        this.isSneaky = 1;
+        this.speed = 50;
+    }
+
+    endOfSneaky(){
+        this.isSneaky = 0;
+        this.speed = 150;
+    }
+
 
     update() {}
 }

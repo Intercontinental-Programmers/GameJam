@@ -52,6 +52,7 @@ export default class extends Phaser.State {
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
   }
 
   update() {
@@ -82,7 +83,13 @@ export default class extends Phaser.State {
        this.player.stop();
     }
     
+    if (this.sneakyButton.isDown) {
+      this.player.sneaky();
+    }
 
+    if (this.sneakyButton.isUp) {
+      this.player.endOfSneaky();
+    }
     if (this.jumpButton.isDown ) {
       this.player.jump();
     }
