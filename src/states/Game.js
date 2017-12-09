@@ -19,7 +19,7 @@ export default class extends Phaser.State {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //LOADING BACKGROUND
-    this.bg = game.add.tileSprite(0, 0, 900, 600, 'background');
+    this.bg = this.game.add.tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
     //LOADING MAP
@@ -50,14 +50,7 @@ export default class extends Phaser.State {
     this.addNewEnemy(this.game.width * 0.7, 300);
     this.addNewEnemy(this.game.width * 0.9, 300);
 
-    //ENEMY
-    this.enemy = new Enemy({
-      game: this.game,
-      x: this.world.centerX,
-      y: this.world.centerY,
-      asset: 'dude'
-    })
-    this.game.add.existing(this.enemy);
+    
 
     //KEY
     this.key = new Key({
@@ -85,6 +78,9 @@ export default class extends Phaser.State {
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
     this.killButtonFlag = true;
+
+
+
   }
 
   addNewEnemy(posX, posY){
@@ -93,8 +89,10 @@ export default class extends Phaser.State {
       game: this.game,
       x: posX,
       y: posY,
-      asset: 'enemy'
+      asset: 'enemy',
+      layer: this.layer
     }));
+
 
     console.log('enemy created');
   }
@@ -103,11 +101,17 @@ export default class extends Phaser.State {
       return this.game.rnd.integerInRange(16, this.game.width - 16);
   }
 
+
+
+  
+
   update() {
 
+    // console.log(this.map.getTileWorldXY( this.player.x, this.player.y - 50, 'Tile Layer 1' ));
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    // this.game.physics.arcade.collide(this.player, this.map., this.simpleCollision);
     //this.game.physics.arcade.collide(this.enemy, this.layer);
     this.game.physics.arcade.collide(this.door, this.layer);
     this.game.physics.arcade.collide(this.key, this.layer);
