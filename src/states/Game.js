@@ -35,7 +35,8 @@ export default class extends Phaser.State {
       game: this.game,
       x: 50,
       y: 50,
-      asset: 'dude'
+      asset: 'dude',
+      layer: this.layer
     })
 
     
