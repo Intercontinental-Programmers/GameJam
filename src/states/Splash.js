@@ -22,7 +22,7 @@ export default class extends Phaser.State {
     this.load.image('starSmall', 'assets/star.png'),
     this.load.image('starBig', 'assets/star2.png'),
     this.load.image('background', 'assets/background2.png')
-    this.load.tilemap('level1', 'assets/level1.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('level1', 'assets/level.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.image('mushroom', 'assets/images/mushroom2.png')
     this.load.image('btnPlay', 'assets/images/btn-play.png')
     this.load.image('logo', 'assets/images/mushroom2.png')
