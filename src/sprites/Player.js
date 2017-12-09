@@ -54,20 +54,26 @@ export default class extends Phaser.Sprite {
             this
                 .animations
                 .play('left_sneak');
+            this.facing = 'left';
         }
     }
 
     moveRight() {
 
         this.body.velocity.x = this.speed;
-        if (!this.sneking)
+        if (!this.sneking){
             this
                 .animations
                 .play('right');
+
+            this.facing = 'right';
+        }
         else {
             this
                 .animations
                 .play('right_sneak');
+
+            this.facing = 'right';
         }
     }
 
@@ -76,11 +82,15 @@ export default class extends Phaser.Sprite {
             .animations
             .stop();
 
-        if (this.facing == 'left') {
-            this.frame = 4;
-        } else {
-            this.frame = 4;
-        }
+        this.frame = 4;
+        this.facing = 'idle';
+        
+        // if (this.facing == 'left') {
+        //     this.frame = 4;
+        // } else {
+        //     this.frame = 4;
+        // }
+        //^cotojestdohujaxdddddddddd
     }
 
 

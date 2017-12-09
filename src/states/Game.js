@@ -104,7 +104,7 @@ export default class extends Phaser.State {
       if(this.killButtonFlag){
         
         if(Math.abs(this.player.x - this.enemy.x) < 50){
-
+          
           if(this.lookingAtEnemy()){
             console.log('zabiles typa');
           }
