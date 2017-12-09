@@ -58,6 +58,7 @@ export default class extends Phaser.State {
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+    this.killButtonFlag = true;
   }
 
   update() {
@@ -69,6 +70,7 @@ export default class extends Phaser.State {
   
     this.player.body.velocity.x = 0;
     this.movementPlayer();
+    
 
   }
 
@@ -98,11 +100,44 @@ export default class extends Phaser.State {
       this.player.jump();
     }
 
-    if(this.killButton.is){
-      console.log('nie zabiles typa')
-        if(Math.abs(this.player.x - this.enemy.x) < 36){
-            console.log('zabiles typa')
+    if(this.killButton.isDown){
+      
+      if(this.killButtonFlag){
+        
+        if(Math.abs(this.player.x - this.enemy.x) < 50){
+
+          if(this.lookingAtEnemy()){
+            console.log('zabiles typa');
+          }
+          else{
+            console.log('nie zabiles typa');
+          }
         }
+        else{
+            console.log('nie zabiles typa')
+        }
+        this.killButtonFlag = false;
+      }
+    }
+
+    if(this.killButton.isUp){
+      this.killButtonFlag = true;
+    }
+    
+
+      
+  }
+
+  lookingAtEnemy(){
+  
+    if(this.player.facing == 'left'){
+      return (this.player.body.x > this.enemy.body.x) && (this.player.body.y == this.enemy.body.y);
+    }
+    else if(this.player.facing == 'right'){
+      return (this.player.body.x < this.enemy.body.x) && (this.player.body.y == this.enemy.body.y);
+    }
+    else{
+      return (this.player.body.y == this.enemy.body.y);
     }
   }
 
