@@ -18,8 +18,6 @@ export default class extends Phaser.Sprite {
         this.body.collideWorldBounds = true;
     }
 
-    //kills particular door -> deletes collision
-    //needed review from John
     static unlockDoor(player, door) {
         for (var counter in player.inventory) {
             if (player.inventory[counter] == door.key)
