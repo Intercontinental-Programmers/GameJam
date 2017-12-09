@@ -93,7 +93,7 @@ export default class extends Phaser.Sprite {
         this.body.velocity.y -= 55;
     }
     moveDown() {
-        this.body.velocity.y += 55;
+        this.body.velocity.y += 105;
     }
 
     stop() {
