@@ -30,11 +30,13 @@ export default class extends Phaser.State {
     //PLAYER
     this.player = new Player({
       game: this.game,
-      x: this.world.centerX,
+      x: this.world.centerX - 40,
       y: this.world.centerY,
       asset: 'dude'
     })
 
+    
+    
     this.game.add.existing(this.player);
 
     //ENEMY
@@ -44,6 +46,8 @@ export default class extends Phaser.State {
       y: this.world.centerY,
       asset: 'enemy'
     })
+    
+   
     this.game.add.existing(this.enemy);
 
 
@@ -52,6 +56,7 @@ export default class extends Phaser.State {
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
   }
 
@@ -59,6 +64,9 @@ export default class extends Phaser.State {
 
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemy, this.layer);
+    this.game.physics.arcade.collide(this.player, this.enemy, this.simpleCollision);
+    this.enemy.body.immovable = true;
+  
     this.player.body.velocity.x = 0;
     this.movementPlayer();
 
@@ -88,5 +96,16 @@ export default class extends Phaser.State {
     if (this.jumpButton.isDown) {
       this.player.jump();
     }
+
+    if(this.killButton.is){
+      console.log('nie zabiles typa')
+        if(Math.abs(this.player.x - this.enemy.x) < 36){
+            console.log('zabiles typa')
+        }
+    }
+  }
+
+  simpleCollision(player, enemy) {
+      enemy.body.velocity.x = 0;
   }
 }
