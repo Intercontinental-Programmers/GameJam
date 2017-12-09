@@ -220,7 +220,7 @@ export default class extends Phaser.Sprite {
 
   detectPlayer(){
     if(this.facing == 'left'){
-      for(var i = 0; i < 4; i++){
+      for(var i = 0; i < 6; i++){
         if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           //change attitude of enemy
           return true;;
@@ -231,7 +231,7 @@ export default class extends Phaser.Sprite {
       }
     }
     else{
-      for(var i = 0; i < 4; i++){
+      for(var i = 0; i < 6; i++){
         if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           //change enemy attitude
           return true;
