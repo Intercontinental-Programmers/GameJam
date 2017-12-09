@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-    constructor({game, x, y, asset}) {
+    constructor({ game, x, y, asset }) {
         super(game, x, y, asset);
         this
             .anchor
@@ -25,34 +25,49 @@ export default class extends Phaser.Sprite {
             .add('right', [
                 5, 6, 7, 8
             ], 10, true);
+        this
+            .animations
+            .add('right_sneak', [
+                14, 15, 16, 17
+            ], 10, true);
+        this
+            .animations
+            .add('left_sneak', [
+                9, 10, 11, 12
+            ], 10, true);
         this.body.velocity.x = 0;
-        this.facing = 'idle';
         this.jumpTimer = this.game.time.now;
-        this.isSneaky = 0; 
-        this.speed =150;
-
+        this.sneking = 0;
     }
 
     moveLeft() {
-
+        
         this.body.velocity.x = -this.speed;
 
-        if (this.facing != 'left') {
+        if (!this.sneking) {
             this
                 .animations
                 .play('left');
             this.facing = 'left';
         }
+        else {
+            this
+                .animations
+                .play('left_sneak');
+        }
     }
+
     moveRight() {
 
         this.body.velocity.x = this.speed;
-
-        if (this.facing != 'right') {
+        if (!this.sneking)
             this
                 .animations
                 .play('right');
-            this.facing = 'right';
+        else {
+            this
+                .animations
+                .play('right_sneak');
         }
     }
 
@@ -62,34 +77,25 @@ export default class extends Phaser.Sprite {
             .stop();
 
         if (this.facing == 'left') {
-            this.frame = 0;
+            this.frame = 4;
         } else {
             this.frame = 4;
         }
-
-        this.facing = 'idle';
     }
 
 
-    jump(){
+    jump() {
 
-        if(this.body.onFloor()){
+        if (this.body.onFloor()) {
             this.body.velocity.y = -250;
             this.jumpTimer = this.game.time.now;
         }
-
     }
 
-    sneaky(){
-        this.isSneaky = 1;
-        this.speed = 50;
+    update() {
+        if (!this.sneking)
+            this.speed = 150;
+        else if (this.sneking)
+            this.speed = 50;
     }
-
-    endOfSneaky(){
-        this.isSneaky = 0;
-        this.speed = 150;
-    }
-
-
-    update() {}
 }

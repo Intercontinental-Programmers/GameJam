@@ -59,8 +59,6 @@ export default class extends Phaser.State {
 
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemy, this.layer);
-    
-
     this.player.body.velocity.x = 0;
     this.movementPlayer();
 
@@ -70,27 +68,24 @@ export default class extends Phaser.State {
 
   }
 
-
-
-  movementPlayer(){
+  movementPlayer() {
     if (this.cursors.left.isDown) {
       this.player.moveLeft();
     }
     else if (this.cursors.right.isDown) {
       this.player.moveRight();
     }
-    else if (this.facing != 'idle') {
-       this.player.stop();
-    }
-    
-    if (this.sneakyButton.isDown) {
-      this.player.sneaky();
+    else {
+      this.player.stop();
     }
 
-    if (this.sneakyButton.isUp) {
-      this.player.endOfSneaky();
+    if (this.sneakyButton.isDown) {
+      this.player.sneking = 1;
     }
-    if (this.jumpButton.isDown ) {
+    else if (this.sneakyButton.isUp) {
+      this.player.sneking = 0;
+    }
+    if (this.jumpButton.isDown) {
       this.player.jump();
     }
   }
