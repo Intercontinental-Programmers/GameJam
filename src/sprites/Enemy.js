@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-  constructor({ game, x, y, asset }) {
+  constructor({ game, x, y, asset, player}) {
     super(game, x, y, asset),
       this
         .anchor
@@ -16,7 +16,7 @@ export default class extends Phaser.Sprite {
 
     //this init graphic for polygon
     this.graphics = this.game.add.graphics(0, 0);
-
+    this.player = player;
     //speed of movement
     this.SPEED = 70;
     //modes
@@ -92,6 +92,10 @@ export default class extends Phaser.Sprite {
     else{
       this.switchDirection();
     }
+  }
+
+  detectPlayer() {
+
   }
 
   checkTime(){
@@ -205,6 +209,23 @@ export default class extends Phaser.Sprite {
     }
 
     this.facing = 'idle';
+  }
+
+  detectPlayer(){
+    if(this.facing == 'left'){
+      for(var i = 0; i < 4; i++){
+        if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+          console.log("kurwa jest");
+        }
+      }
+    }
+    else{
+      for(var i = 0; i < 4; i++){
+        if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+          console.log("kurwa jest prawa");
+        }
+      }
+    }
   }
 
   killEnemy(){

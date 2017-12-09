@@ -12,6 +12,10 @@ export default class extends Phaser.Sprite {
             .enable(this, Phaser.Physics.ARCADE);
 
         this.timeToStep = this.game.time.now;
+        //coordinates to check if polyView of Enemy contains Player
+        //left-down, right - down, left - up, right - up
+        //(x,y)
+        this.coordinates = [[this.x - 18.5, this.y + 25], [this.x + 18.5, this.y + 25], [this.x - 18.5, this.y - 25], [this.x + 18.5 , this.y + 25]];
         this
             .animations
             .add('left', [
@@ -44,7 +48,6 @@ export default class extends Phaser.Sprite {
     moveLeft() {
         
         this.body.velocity.x = -this.speed;
-
         if (!this.sneking) {
             this
                 .animations
@@ -101,5 +104,18 @@ export default class extends Phaser.Sprite {
             this.speed = 150;
         else if (this.sneking)
             this.speed = 50;
+    }
+
+    updateXCoordinate(){
+        this.coordinates[0][0] = this.x - 18.5;
+        this.coordinates[1][0] = this.x + 18.5;
+        this.coordinates[2][0] = this.x - 18.5;
+        this.coordinates[3][0] = this.x + 18.5;
+    }
+    updateYCoordinate(){
+        this.coordinates[0][1] = this.y + 25;
+        this.coordinates[1][1] = this.y + 25;
+        this.coordinates[2][1] = this.y - 25;
+        this.coordinates[3][1] = this.y - 25;
     }
 }

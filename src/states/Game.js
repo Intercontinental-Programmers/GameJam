@@ -55,7 +55,8 @@ export default class extends Phaser.State {
       game: this.game,
       x: this.world.centerX,
       y: this.world.centerY,
-      asset: 'dude'
+      asset: 'dude',
+      player: this.player
     })
     this.game.add.existing(this.enemy);
 
@@ -93,7 +94,8 @@ export default class extends Phaser.State {
       game: this.game,
       x: posX,
       y: posY,
-      asset: 'enemy'
+      asset: 'enemy',
+      player: this.player
     }));
 
     console.log('enemy created');
@@ -119,6 +121,11 @@ export default class extends Phaser.State {
   
     this.player.body.velocity.x = 0;
     this.movementPlayer();
+    this.player.updateXCoordinate();
+    this.player.updateYCoordinate();
+    this.enemies.forEach(enemy => {
+      enemy.detectPlayer();
+    })
     
   }
 
