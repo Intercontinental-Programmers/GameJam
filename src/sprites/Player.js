@@ -91,7 +91,7 @@ export default class extends Phaser.Sprite {
     jump() {
 
         if (this.body.onFloor()) {
-            this.body.velocity.y = -250;
+            this.body.velocity.y = -350;
             this.jumpTimer = this.game.time.now;
         }
     }

@@ -95,14 +95,14 @@ export default class extends Phaser.Sprite {
 
 
 
-    this.graphics.beginFill(0xFF33ff);
+    this.graphics.beginFill(0xFFFFFF);
     if (this.moveLeft === 0) {
       this.graphics.drawPolygon(this.polyOfViewLeft.points);
       this.graphics.beginFill(0xFFFFff);
       this.graphics.drawPolygon(this.polyOfViewLeft2.points);
     }
     else {
-      this.graphics.beginFill(0xFF33ff);
+      this.graphics.beginFill(0xFFFFFF);
       this.graphics.drawPolygon(this.polyOfViewRight.points);
       this.graphics.beginFill(0xFFFFff);
       this.graphics.drawPolygon(this.polyOfViewRight2.points);
