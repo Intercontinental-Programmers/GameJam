@@ -84,13 +84,6 @@ export default class extends Phaser.Sprite {
 
         this.frame = 4;
         this.facing = 'idle';
-        
-        // if (this.facing == 'left') {
-        //     this.frame = 4;
-        // } else {
-        //     this.frame = 4;
-        // }
-        //^cotojestdohujaxdddddddddd
     }
 
 

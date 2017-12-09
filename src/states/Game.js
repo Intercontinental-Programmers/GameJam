@@ -102,10 +102,10 @@ export default class extends Phaser.State {
     if(this.killButton.isDown){
       
       if(this.killButtonFlag){
-        
+        //probably requires refactor
         if(Math.abs(this.player.x - this.enemy.x) < 50){
-          
-          if(this.lookingAtEnemy()){
+
+          if(this.lookingAtEnemy(this.player, this.enemy)){
             console.log('zabiles typa');
           }
           else{
@@ -127,17 +127,22 @@ export default class extends Phaser.State {
       
   }
 
-  lookingAtEnemy(){
+  //probably requires refactor
+  lookingAtEnemy(player, enemy){
   
-    if(this.player.facing == 'left'){
-      return (this.player.body.x > this.enemy.body.x) && (this.player.body.y == this.enemy.body.y);
+    if(player.facing == 'left'){
+      return (player.body.x > enemy.body.x) && this.areOnTheSameLevel(player, enemy);
     }
-    else if(this.player.facing == 'right'){
-      return (this.player.body.x < this.enemy.body.x) && (this.player.body.y == this.enemy.body.y);
+    else if(player.facing == 'right'){
+      return (player.body.x < enemy.body.x) && this.areOnTheSameLevel(player, enemy);
     }
     else{
-      return (this.player.body.y == this.enemy.body.y);
+      return this.areOnTheSameLevel(player, enemy);
     }
+  }
+
+  areOnTheSameLevel(player, enemy){
+    return (player.body.y == enemy.body.y)
   }
 
   simpleCollision(player, enemy) {
