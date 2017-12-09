@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-  constructor({ game, x, y, asset }) {
+  constructor({ game, x, y, asset,layer }) {
     super(game, x, y, asset),
       this
         .anchor
@@ -12,6 +12,7 @@ export default class extends Phaser.Sprite {
         .arcade
         .enable(this),
       //this.enableBody = true,
+      this.layer = layer;
       this.timeToStep = this.game.time.now;
 
     //this init graphic for polygon
@@ -29,6 +30,7 @@ export default class extends Phaser.Sprite {
     this.moveRight = 0;
 
     this.timeToStep = this.game.time.now;
+    this.lastSwitchDirection = this.game.time.now;
     this
       .animations
       .add('left', [
@@ -102,12 +104,7 @@ export default class extends Phaser.Sprite {
     this.currentTime = Date.now();
     this.walkTime = this.game.rnd.integerInRange(1000, 3500);
 
-    if(this.facing == 'left'){
-        this.facing = 'right';
-    }
-    else{
-      this.facing = 'left';
-    }
+    this.facing = this.facing == 'left' ? 'right' : 'left';
   }
 
 
@@ -143,6 +140,8 @@ export default class extends Phaser.Sprite {
   update() {
   
     this.wander();
+    this.checkEdge();
+ 
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x + 10, this.y - 20),
       new Phaser.Point(this.x + 120, this.y - 45.8),
@@ -220,4 +219,15 @@ export default class extends Phaser.Sprite {
     
   }
 
+  checkEdge(){
+
+    // console.log("Layer: " + this.layer);
+    
+    if(this.layer.getTiles(this.x -15, this.y +25, 30, 10,true).length == 1 && this.game.time.now- this.lastSwitchDirection >200)
+      {
+        this.switchDirection();
+        this.lastSwitchDirection = this.game.time.now;
+      }
+  }
+  
 }
