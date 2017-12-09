@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 export default class extends Phaser.Sprite {
-    constructor({game, x, y, asset, layer}) {
+    constructor({ game, x, y, asset, layer }) {
         super(game, x, y, asset);
         this
             .anchor
@@ -13,8 +13,10 @@ export default class extends Phaser.Sprite {
 
         this.timeToStep = this.game.time.now;
         this.layer = layer;
-        this
-            .animations
+        //coordinates to check if polyView of Enemy contains Player
+        //(x,y)
+        this.coordinates = [[this.x - 18.25, this.y + 22], [this.x + 18.25, this.y + 22], [this.x - 18.25, this.y - 22], [this.x + 18.25, this.y + 22]];
+        this.animations
             .add('left', [
                 0, 1, 2, 3
             ], 10, true);
@@ -38,15 +40,16 @@ export default class extends Phaser.Sprite {
             ], 10, true);
         this
             .animations
-            .add('left_upper', [
-                18, 19, 20, 21
+            .add('right_upper', [
+                18, 19, 20, 21, 22, 23
             ], 10, true);
         this
             .animations
-            .add('right_upper', [
-                25, 24, 23, 22
+            .add('left_upper', [
+                29, 28, 27, 26, 25, 24
             ], 10, true);
         this.body.velocity.x = 0;
+        this.onLadder = 0;
         this.jumpTimer = this.game.time.now;
         this.sneking = 0;
         this.inventory = [];
@@ -55,7 +58,6 @@ export default class extends Phaser.Sprite {
     moveLeft() {
 
         this.body.velocity.x = -this.speed;
-
         if (!this.sneking) {
             this
                 .animations
@@ -87,6 +89,13 @@ export default class extends Phaser.Sprite {
         }
     }
 
+    moveUp() {
+        this.body.velocity.y -= 55;
+    }
+    moveDown() {
+        this.body.velocity.y += 55;
+    }
+
     stop() {
         this
             .animations
@@ -99,31 +108,61 @@ export default class extends Phaser.Sprite {
     jump() {
 
         if (this.body.onFloor()) {
-            this.body.velocity.y = -350;
+            this.body.velocity.y = -250;
             this.jumpTimer = this.game.time.now;
         }
     }
 
     update() {
-        if (!this.sneking) 
+        if (!this.sneking)
             this.speed = 150;
-        else if (this.sneking) 
+        else if (this.sneking)
             this.speed = 50;
-        
+
         this.checkEdge();
-    
+        this.checkLadder();
     }
-    
+
+    checkLadder() {
+        if (this.onLadder) {
+            this.speed = 50;
+        }
+    }
+
     checkEdge() {
 
         // console.log("Layer: " + this.layer);
 
-        if (this.layer.getTiles(this.x , this.y + 15, 20, 5, true).length > 0 && this.facing == "right") {
-            this.body.velocity.y = -100;
-            console.log("Right: " + this.layer.getTiles(this.x , this.y + 15, 10,5 , true) );
-        } else if(this.layer.getTiles(this.x-20 , this.y + 15, 20, 5, true).length > 0 && this.facing == "left"){
-            this.body.velocity.y = -100;
-            console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
+        if (this.layer.getTiles(this.x, this.y + 15, 20, 5, true).length > 0 && this.facing == "right") {
+            if (this.layer.getTiles(this.x, this.y - 20, 20, 5, true).length == 0) {
+                this.body.velocity.y = -100;
+                // console.log("Right: " + this.layer.getTiles(this.x , this.y + 15, 10,5 , true) );
+            }
+        } else if (this.layer.getTiles(this.x - 20, this.y + 15, 20, 5, true).length > 0 && this.facing == "left") {
+            if (this.layer.getTiles(this.x - 20, this.y - 20, 220, 5, true).length == 0) {
+                this.body.velocity.y = -100;
+                // console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
+            }
         }
+    }
+
+    setOnLadder(status) {
+        this.onLadder = status;
+    }
+    getOnLadder() {
+        return this.onLadder;
+    }
+
+    updateXCoordinate() {
+        this.coordinates[0][0] = this.x - 18.25;
+        this.coordinates[1][0] = this.x + 18.25;
+        this.coordinates[2][0] = this.x - 18.25;
+        this.coordinates[3][0] = this.x + 18.25;
+    }
+    updateYCoordinate() {
+        this.coordinates[0][1] = this.y + 22;
+        this.coordinates[1][1] = this.y + 22;
+        this.coordinates[2][1] = this.y - 22;
+        this.coordinates[3][1] = this.y - 22;
     }
 }
