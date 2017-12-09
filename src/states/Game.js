@@ -46,31 +46,17 @@ export default class extends Phaser.State {
     this.enemies = this.game.add.group();
     this.addNewEnemy(this.game.width * 0.1, 300);
     this.addNewEnemy(this.game.width * 0.3, 300);
-    this.addNewEnemy(this.game.width * 0.45, 300);
-    this.addNewEnemy(this.game.width * 0.7, 300);
-    this.addNewEnemy(this.game.width * 0.9, 300);
 
     
 
-    //KEY
-    this.key = new Key({
-      game: this.game,
-      x: this.world.centerX - 200,
-      y: this.world.centerY - 50,
-      asset: 'droid'
-    }, 1);
-    this.game.add.existing(this.key);
+    //DOORS AND KEYS
+    this.doors = this.game.add.group();
+    this.keys = this.game.add.group();
+    this.keyIdCounter = 0;
 
-    //DOOR
-    this.door = new Door({
-      game: this.game,
-      x: this.world.centerX + -400,
-      y: this.world.centerY,
-      asset: 'dude',
-      key: this.key
-    })
-    this.game.add.existing(this.door);
-
+    this.addKeyDoorPair(this.game.width * 0.4, 300, this.genNewKey(this.game.width * 0.2, 300));
+    this.addKeyDoorPair(this.game.width * 0.62, 200, this.genNewKey(this.game.width * 0.55, 300));
+ 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -78,7 +64,6 @@ export default class extends Phaser.State {
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
     this.killButtonFlag = true;
-
 
 
   }
@@ -97,6 +82,33 @@ export default class extends Phaser.State {
     console.log('enemy created');
   }
 
+
+  addKeyDoorPair(doorPosX, doorPosY, corrKey){
+
+    this.doors.add(new Door({
+      game: this.game,
+      x: doorPosX,
+      y: doorPosY,
+      asset: 'dude',
+      key: corrKey
+    }));
+
+    this.keys.add(corrKey);
+
+  }
+
+  genNewKey(posX, posY){
+   return new Key({
+      game: this.game,
+      x: posX,
+      y: posY,
+      asset: 'droid'
+    }, this.keyIdCounter++);
+  }
+
+
+
+
   genRandomSpawnPoint(){
       return this.game.rnd.integerInRange(16, this.game.width - 16);
   }
@@ -113,10 +125,10 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
     // this.game.physics.arcade.collide(this.player, this.map., this.simpleCollision);
     //this.game.physics.arcade.collide(this.enemy, this.layer);
-    this.game.physics.arcade.collide(this.door, this.layer);
-    this.game.physics.arcade.collide(this.key, this.layer);
-    this.game.physics.arcade.collide(this.player, this.door, this.door.unlockDoor);
-    this.game.physics.arcade.overlap(this.player, this.key, this.key_collector, null, this);
+    this.game.physics.arcade.collide(this.doors, this.layer);
+    this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
+    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
 
     this.enemies.setAll('body.immovable', true);
     // this.enemy.body.immovable = true;

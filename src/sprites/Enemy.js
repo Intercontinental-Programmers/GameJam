@@ -102,11 +102,14 @@ export default class extends Phaser.Sprite {
 
   switchDirection(){
     this.currentTime = Date.now();
-    this.walkTime = this.game.rnd.integerInRange(1000, 3500);
+    this.walkTime = this.genRandTime();
 
     this.facing = this.facing == 'left' ? 'right' : 'left';
   }
 
+  genRandTime(){
+    return this.game.rnd.integerInRange(1000, 3500);
+  }
 
   genFirstDirection(){
     let state = this.game.rnd.integerInRange(0, 2);
@@ -167,6 +170,7 @@ export default class extends Phaser.Sprite {
     ]);
     this.graphics.clear();
     this.drawView();
+
   }
 
   drawView(){
