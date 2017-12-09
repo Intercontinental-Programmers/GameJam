@@ -4,22 +4,31 @@ import Enemy from '../sprites/Enemy'
 import Player from '../sprites/Player'
 import Door from '../sprites/Door'
 import Key from '../sprites/Key'
+import Ladder from '../sprites/Ladder'
 
 export default class extends Phaser.State {
 
   constructor() {
     super()
     this.key_counter = 0;
+    this.CHASING_TIME = 4000;
+    window.playerDetected = false;
   }
 
   init() { }
   preload() { }
 
   create() {
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this
+      .game
+      .physics
+      .startSystem(Phaser.Physics.ARCADE);
 
     //LOADING BACKGROUND
-    this.bg = this.game.add.tileSprite(0, 0, 900, 600, 'background');
+    this.bg = this
+      .game
+      .add
+      .tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
     this.map = this.game.add.tilemap('level', 16, 16);
@@ -30,20 +39,19 @@ export default class extends Phaser.State {
     this.layer.resizeWorld();
 
 
+
     //PLAYER
-    this.player = new Player({
-      game: this.game,
-      x: 50,
-      y: 50,
-      asset: 'dude',
-      layer: this.layer
-    })
+    this.player = new Player({ game: this.game, x: 50, y: 50, asset: 'dude', layer: this.layer })
     this.game.add.existing(this.player);
+
+    //Ladder
+    this.ladder = new Ladder({ game: this.game, x: 150, y: 50, asset: 'mushroom', layer: this.layer })
+    this.game.add.existing(this.ladder);
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(this.game.width * 0.1, 300);
-    this.addNewEnemy(this.game.width * 0.3, 300);
+    this.addNewEnemy(this.game.width * 0.6, 100);
+    this.addNewEnemy(this.game.width * 0.65, 100);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -73,7 +81,8 @@ export default class extends Phaser.State {
       x: posX,
       y: posY,
       asset: 'enemy',
-      layer: this.layer
+      layer: this.layer,
+      player: this.player
     }));
   }
 
@@ -84,6 +93,7 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.ladder, this.layer);
     this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
     this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
 
@@ -95,6 +105,23 @@ export default class extends Phaser.State {
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.updateShadowTexture();
 
+
+    this.enemies.forEach(enemy => {
+      if (enemy.detectPlayer()) {
+        console.log('wykryto cie');
+        window.playerDetected = true;
+        this.detectionTime = Date.now();
+      }
+    });
+
+
+    if (this.checkTime()) {
+      window.playerDetected = false;
+    }
+  }
+
+  checkTime() {
+    return (Date.now() - this.detectionTime) > this.CHASING_TIME;
   }
 
   updateShadowTexture() {
@@ -110,7 +137,7 @@ export default class extends Phaser.State {
       heroX, heroY, 100 * 0.3,
       heroX, heroY, radius);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
     this.shadowTexture.context.beginPath();
     this.shadowTexture.context.fillStyle = gradient;
@@ -118,6 +145,9 @@ export default class extends Phaser.State {
     this.shadowTexture.context.fill();
 
     this.shadowTexture.dirty = true;
+    this.player.updateXCoordinate();
+    this.player.updateYCoordinate();
+
   }
 
   key_collector(player, key) {
@@ -127,16 +157,8 @@ export default class extends Phaser.State {
 
   addKeyDoorPair(doorPosX, doorPosY, corrKey) {
 
-    this.doors.add(new Door({
-      game: this.game,
-      x: doorPosX,
-      y: doorPosY,
-      asset: 'dude',
-      key: corrKey
-    }));
-
+    this.doors.add(new Door({ game: this.game, x: doorPosX, y: doorPosY, asset: 'dude', key: corrKey }));
     this.keys.add(corrKey);
-
   }
 
   genNewKey(posX, posY) {
@@ -155,18 +177,25 @@ export default class extends Phaser.State {
   movementPlayer() {
     if (this.cursors.left.isDown) {
       this.player.moveLeft();
-    }
-    else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown) {
       this.player.moveRight();
-    }
-    else {
+    } else {
       this.player.stop();
+    }
+    if (this.game.physics.arcade.overlap(this.ladder, this.player)) {
+      this.player.body.velocity.y = -13.5;
+
+      if (this.cursors.up.isDown) {
+        this.player.moveUp();
+      }
+      if (this.cursors.down.isDown) {
+        this.player.moveDown();
+      }
     }
 
     if (this.sneakyButton.isDown) {
       this.player.sneking = 1;
-    }
-    else if (this.sneakyButton.isUp) {
+    } else if (this.sneakyButton.isUp) {
       this.player.sneking = 0;
     }
     if (this.jumpButton.isDown) {
@@ -177,25 +206,14 @@ export default class extends Phaser.State {
 
       if (this.killButtonFlag) {
 
-
         this.enemies.forEach(enemy => {
-          //probably requires refactor
           if (Math.abs(this.player.x - enemy.x) < 50) {
-
             if (this.lookingAtEnemy(this.player, enemy)) {
-              console.log('zabiles typa');
               enemy.killEnemy();
               this.enemies.remove(enemy);
             }
-            else {
-              console.log('nie zabiles typa');
-            }
-          }
-          else {
-            console.log('nie zabiles typa')
           }
         })
-
         this.killButtonFlag = false;
       }
     }
@@ -205,16 +223,13 @@ export default class extends Phaser.State {
     }
   }
 
-  //probably requires refactor
   lookingAtEnemy(player, enemy) {
 
     if (player.facing == 'left') {
       return (player.body.x > enemy.body.x) && this.areOnTheSameLevel(player, enemy);
-    }
-    else if (player.facing == 'right') {
+    } else if (player.facing == 'right') {
       return (player.body.x < enemy.body.x) && this.areOnTheSameLevel(player, enemy);
-    }
-    else {
+    } else {
       return this.areOnTheSameLevel(player, enemy);
     }
   }
