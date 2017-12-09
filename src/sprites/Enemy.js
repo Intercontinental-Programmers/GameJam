@@ -215,10 +215,11 @@ export default class extends Phaser.Sprite {
     if(this.facing == 'left'){
       for(var i = 0; i < 4; i++){
         if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          //change enemy attitude
+          //change attitude of enemy
+          return true;
         }
         else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          //render game over state
+          return false;
         }
       }
     }
@@ -226,9 +227,10 @@ export default class extends Phaser.Sprite {
       for(var i = 0; i < 4; i++){
         if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           //change enemy attitude
+          return true;
         }
         else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-        //rende game over
+          return false;
         }
         
       }

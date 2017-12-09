@@ -15,7 +15,7 @@ export default class extends Phaser.Sprite {
         //coordinates to check if polyView of Enemy contains Player
         //left-down, right - down, left - up, right - up
         //(x,y)
-        this.coordinates = [[this.x - 18.5, this.y + 25], [this.x + 18.5, this.y + 25], [this.x - 18.5, this.y - 25], [this.x + 18.5 , this.y + 25]];
+        this.coordinates = [[this.x - 18.25, this.y + 22], [this.x + 18.25, this.y + 22], [this.x - 18.25, this.y - 22], [this.x + 18.25 , this.y + 22]];
         this
             .animations
             .add('left', [
@@ -107,15 +107,15 @@ export default class extends Phaser.Sprite {
     }
 
     updateXCoordinate(){
-        this.coordinates[0][0] = this.x - 18.5;
-        this.coordinates[1][0] = this.x + 18.5;
-        this.coordinates[2][0] = this.x - 18.5;
-        this.coordinates[3][0] = this.x + 18.5;
+        this.coordinates[0][0] = this.x - 18.25;
+        this.coordinates[1][0] = this.x + 18.25;
+        this.coordinates[2][0] = this.x - 18.25;
+        this.coordinates[3][0] = this.x + 18.25;
     }
     updateYCoordinate(){
-        this.coordinates[0][1] = this.y + 25;
-        this.coordinates[1][1] = this.y + 25;
-        this.coordinates[2][1] = this.y - 25;
-        this.coordinates[3][1] = this.y - 25;
+        this.coordinates[0][1] = this.y + 22;
+        this.coordinates[1][1] = this.y + 22;
+        this.coordinates[2][1] = this.y - 22;
+        this.coordinates[3][1] = this.y - 22;
     }
 }

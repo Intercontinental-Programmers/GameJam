@@ -124,8 +124,10 @@ export default class extends Phaser.State {
     this.player.updateXCoordinate();
     this.player.updateYCoordinate();
     this.enemies.forEach(enemy => {
-      enemy.detectPlayer();
-    })
+      if(enemy.detectPlayer()){
+        this.state.start('GameOver');
+      }
+    });
     
   }
 
