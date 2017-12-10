@@ -166,7 +166,10 @@ export default class extends Phaser.Sprite {
       noise *= player.lastNoises[0];
       // console.log("Distans: " +(distMax-Math.abs(this.body.x - player.body.x)) + "  12312     Generowany hałas: " + noise);
       //alert("das");
-      this.noiseLevel += noise;
+
+      if(!window.playerDetected)
+        this.noiseLevel += noise;
+     
     }
   }
 
@@ -181,14 +184,16 @@ export default class extends Phaser.Sprite {
 
     this.checkEdge();
 
-    if(this.noiseLevel > 100){
-      this.noiseLevel -= 100;
+    if(this.noiseLevel > 200){
+      this.noiseLevel -= 200;
     }
-    if(this.noiseLevel > 100000){
+
+    if(this.noiseLevel >= 100000){
       // console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
       // alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
       window.playerDetected = true;
-      this.noiseLevel = 0;
+      console.log(this.noiseLevel)
+      // this.noiseLevel = 0;
     }
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x + 10, this.y - 20),

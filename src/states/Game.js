@@ -13,6 +13,7 @@ export default class extends Phaser.State {
     this.key_counter = 0;
     this.CHASING_TIME = 2000;
     this.GAME_OVER_TIME = 2000;
+    this.NOISE_BAR_MAX = 150;
     window.playerDetected = false;
   }
 
@@ -75,6 +76,8 @@ export default class extends Phaser.State {
 
     //TIME
     this.game.time.events.add(Phaser.Timer.SECOND * 50, this.game_over, this);
+
+    this.graphics = this.game.add.graphics(0, 0);
   }
 
   addNewEnemy(posX, posY) {
@@ -111,7 +114,7 @@ export default class extends Phaser.State {
 
 
     this.enemies.forEach(enemy => {
-      if (enemy.detectPlayer()) {
+      if (enemy.detectPlayer() || enemy.noiseLevel >= 100000) {
 
         window.playerDetected = true;
         this.seen = true;
@@ -132,6 +135,10 @@ export default class extends Phaser.State {
     }
 
     if (this.checkTimeUndetected()) {
+      
+      // this.enemies.forEach(enemy =>{
+      //   enemy.noiseLevel = 0;
+      // })
       window.playerDetected = false;
     }
 
@@ -139,6 +146,44 @@ export default class extends Phaser.State {
       this.game.state.start('GameOver');
     }
     this.seen = false;
+
+    this.drawNoiseBar();
+
+    // let rectangle = new Phaser.Rectangle(50, 50, 50, 100);
+    
+  }
+
+  drawNoiseBar(){
+    this.graphics.beginFill(0xC7C7C7);
+    this.graphics.drawRect(32, 50,150, 30);
+    this.graphics.alpha = 0.1;
+    this.graphics.endFill();
+
+    this.enemies.sort('noiseLevel', Phaser.Group.SORT_DESCENDING);
+
+    const angriest = this.enemies.getAt(0);
+
+    let fact = angriest.noiseLevel / 100000;
+
+    if(window.playerDetected){
+        this.graphics.beginFill(0xED2828);
+        this.graphics.drawRect(32, 50, this.NOISE_BAR_MAX, 30);
+    }
+    else{
+      if(fact > 1)
+        fact = 1;
+        
+      this.graphics.beginFill(0x74D953);
+      this.graphics.drawRect(32, 50, this.NOISE_BAR_MAX * fact, 30);
+    }
+
+   
+    this.graphics.alpha = 1;
+    this.graphics.endFill();
+  }
+
+  lockNoiseBar(){
+    
   }
 
   switchDirection(enemy, door){
@@ -328,5 +373,6 @@ export default class extends Phaser.State {
 
   render() {
     this.game.debug.text("Time left: " + game.time.events.duration, 32, 32);
+    
   }
 }
