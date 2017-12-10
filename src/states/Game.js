@@ -594,6 +594,8 @@ export default class extends Phaser.State {
 
   enemyRockCollision(enemy, rock) {
     enemy.myOgłuszenie();
+    enemy.noiseLevel = 0;
+    enemy.animations.play('turn');
     rock.kill();
   }
 

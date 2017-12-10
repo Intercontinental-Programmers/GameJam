@@ -178,7 +178,7 @@ export default class extends Phaser.Sprite {
       // console.log("Distans: " +(distMax-Math.abs(this.body.x - player.body.x)) + "  12312     Generowany hałas: " + noise);
       //alert("das");
 
-      if(!window.playerDetected){
+      if(!window.playerDetected && this.state!=2){
         this.noiseLevel += noise;
       }
     }
