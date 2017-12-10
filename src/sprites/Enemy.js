@@ -238,8 +238,12 @@ export default class extends Phaser.Sprite {
         new Phaser.Point(this.x - 120, this.y + 25)
       ]);
       this.graphics.clear();
-      this.drawView();
-    } else{
+      //do not draw vie polygons if enemy stunned
+      if(this.state != 2){
+        this.drawView();
+      }
+    }
+    else{
       this.polyOfViewRight = new Phaser.Polygon([
         new Phaser.Point(this.x + 10, this.y - 20),
         new Phaser.Point(this.x + 120, this.y - 45.8),
@@ -264,7 +268,9 @@ export default class extends Phaser.Sprite {
         new Phaser.Point(this.x - 120, this.y + 25)
       ]);
       this.graphics.clear();
-      this.drawView();
+      if(this.state != 2){
+        this.drawView();
+      }
       this.goToTriger();
     }
   }
@@ -318,29 +324,33 @@ export default class extends Phaser.Sprite {
   }
 
   detectPlayer(){
-    if(this.facing == 'left'){
-      for(var i = 0; i < 6; i++){
-        if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          //change attitude of enemy
-          return true;;
+    //if enemy is not stunned do not detect
+    if(this.state != 2){
+      if(this.facing == 'left'){
+        for(var i = 0; i < 6; i++){
+          if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+            //change attitude of enemy
+            return true;;
+          }
+          else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+            return !this.player.sneking;
+          }
         }
-        else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          return !this.player.sneking;
+      }
+      else{
+        for(var i = 0; i < 6; i++){
+          if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) ){
+            //change enemy attitude
+            return true;
+          }
+          else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+            return !this.player.sneking;
+          }
+  
         }
       }
     }
-    else{
-      for(var i = 0; i < 6; i++){
-        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) ){
-          //change enemy attitude
-          return true;
-        }
-        else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
-          return !this.player.sneking;
-        }
-
-      }
-    }
+    
   }
 
   killEnemy(){

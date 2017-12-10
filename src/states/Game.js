@@ -538,10 +538,12 @@ export default class extends Phaser.State {
   // }
 
   simpleCollision(player, enemy) {
-    if ((player.body.x < enemy.body.x && enemy.facing == 'left' && player.isVisible == 1) || ((player.body.x > enemy.body.x && enemy.facing == 'right') && player.isVisible == 1)) {
-      game.state.start('GameOver');
+    if(enemy.state != 2){
+      if ((player.body.x < enemy.body.x && enemy.facing == 'left' && player.isVisible == 1) || ((player.body.x > enemy.body.x && enemy.facing == 'right') && player.isVisible == 1)) {
+        game.state.start('GameOver');
+      }
+      enemy.body.velocity.x = 0;
     }
-    enemy.body.velocity.x = 0;
   }
 
 
