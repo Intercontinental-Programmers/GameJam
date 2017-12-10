@@ -6,6 +6,7 @@ import Door from '../sprites/Door'
 import Key from '../sprites/Key'
 import Ladder from '../sprites/Ladder'
 import Segment from './Segment'
+import Rock from '../sprites/Rock'
 
 export default class extends Phaser.State {
 
@@ -21,6 +22,7 @@ export default class extends Phaser.State {
   preload() { }
 
   create() {
+
     this
       .game
       .physics
@@ -50,7 +52,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    // this.addNewEnemy(500, 100);
+    this.addNewEnemy(500, 100);
     // this.addNewEnemy(600, 120);
     // this.addNewEnemy(550, 120);
 
@@ -59,6 +61,9 @@ export default class extends Phaser.State {
     this.keys = this.game.add.group();
     this.keyIdCounter = 0;
 
+    //ROCKS
+    this.rocks = this.game.add.group();
+
     this.addKeyDoorPair(630, 300, this.genNewKey(850, 100));
     this.addKeyDoorPair(825, 550, this.genNewKey(25, 300));
 
@@ -66,6 +71,7 @@ export default class extends Phaser.State {
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    this.rockButton = this.game.input.keyboard.addKey(Phaser.Keyboard.K);
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
     this.killButtonFlag = true;
@@ -312,7 +318,10 @@ export default class extends Phaser.State {
 
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
+    this.game.physics.arcade.collide(this.player, this.rocks);
+    this.game.physics.arcade.collide(this.layer, this.rocks, this.layerRockCollision);
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    this.game.physics.arcade.collide(this.enemies, this.rocks, this.enemyRockCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
@@ -421,6 +430,15 @@ export default class extends Phaser.State {
     if (this.jumpButton.isDown) {
       this.player.jump();
     }
+    if (this.rockButton.isDown) {
+      this.thrown = true;
+    }
+    if(this.rockButton.isUp && this.thrown == true)
+      {
+        this.duration = this.rockButton.duration;
+        this.createRock(this.duration);
+        this.thrown = false;
+      }
 
     if (this.killButton.isDown) {
 
@@ -430,6 +448,7 @@ export default class extends Phaser.State {
           if (Math.abs(this.player.x - enemy.x) < 50) {
             if (this.lookingAtEnemyFromBehind(this.player, enemy)) {
               enemy.killEnemy();
+
               this.enemies.remove(enemy);
             }
           }
@@ -467,9 +486,20 @@ export default class extends Phaser.State {
     return (player.body.y == enemy.body.y)
   }
 
+  // playerIsCaught(player, enemy){
+  //   return (player.body.x < enemy.body.x && enemy.facing == 'left') || (player.body.x > enemy.body.x && enemy.facing == 'right')
+  // }
+
   simpleCollision(player, enemy) {
+    if((player.body.x < enemy.body.x && enemy.facing == 'left') || (player.body.x > enemy.body.x && enemy.facing == 'right')){
+      console.log(game);
+      game.state.start('GameOver');
+    }
     enemy.body.velocity.x = 0;
   }
+
+
+
 
   add_collisions() {
     this.map.setCollisionBetween(30, 279);
@@ -499,6 +529,34 @@ export default class extends Phaser.State {
     this.map.setCollisionBetween(1516, 1539);
   }
 
+  createRock(duration) {
+    if(duration > 600)
+      duration = 600;
+    this.rock = new Rock({ game: this.game, x: this.player.x, y: this.player.y - 25, asset: 'rock',enemies: this.enemies });
+    this.rocks.add(this.rock);
+    this.game.add.existing(this.rocks);
+    if(this.player.lastDirection == "left")
+      this.rock.body.velocity.x = -duration;
+    else
+      this.rock.body.velocity.x = duration;
+    this.rock.body.velocity.y = -duration/3*2;
+  }
+
+  enemyRockCollision(enemy, rock)
+  {
+    enemy.myOgłuszenie();
+    rock.kill();
+  }
+
+  layerRockCollision(rock, layer)
+  {
+
+    console.log(rock.body.x);
+    for(var i = 0; i < rock.enemies.length; i++)
+      rock.enemies.children[i].setTarget(rock.body.x, rock.body.y);
+   
+    rock.kill();
+  }
   game_over() {
     this.game.state.start('GameOver');
   }

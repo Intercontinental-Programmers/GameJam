@@ -20,11 +20,18 @@ export default class extends Phaser.Sprite {
     this.graphics = this.game.add.graphics(0, 0);
     this.player = player;
     //speed of movement
-    this.SPEED = 40;
-    //0 - wander, 1 - chase
+    this.SPEED = 70;
+    //0 - wander, 1 - chase, 2 - myOgłuszenie
     this.state = 0;
+    this.timeForMyOgłuszenie = this.game.time.now + 4000;
 
     this.sharedState = sharedState;
+
+    this.targetX = 0;
+    this.targetY = 0;
+    this.triggered = 0;
+    this.triggeredTime = this.game.time.now;
+
 
     this.timeToStep = this.game.time.now;
     this.lastSwitchDirection = this.game.time.now;
@@ -48,7 +55,6 @@ export default class extends Phaser.Sprite {
     this.facing = this.genFirstDirection();
     this.jumpTimer = this.game.time.now;
     this.noiseLevel = 0;
-    
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x, this.y - 23),
       new Phaser.Point(this.x + 100, this.y - 48),
@@ -79,9 +85,9 @@ export default class extends Phaser.Sprite {
   }
 
   wander() {
-  
+
     //if elapsed time < generated time
-    if(this.checkTime()){
+    if(this.checkTime() ){
       if(this.facing == 'left'){
         this.body.velocity.x  = -this.SPEED;
         this.animations.play('left');
@@ -95,6 +101,12 @@ export default class extends Phaser.Sprite {
     else{
       this.switchDirection();
     }
+  }
+
+  myOgłuszenie() {
+    this.state = 2;
+    this.body.moves = false;
+    this.timeForMyOgłuszenie = this.game.time.now + 4000;
   }
 
   runLeft(){
@@ -112,11 +124,11 @@ export default class extends Phaser.Sprite {
   chasePlayer() {
     console.log('czejsuje')
     if(this.isOnTheSameLevel()){
-    
+
       if(this.player.body.x < this.body.x){
         this.facing = 'left';
         this.runLeft();
-       
+
       }
       else{
         this.facing = 'right';
@@ -159,7 +171,7 @@ export default class extends Phaser.Sprite {
 
   addNoise(player){
 //console.log(player.lastNoises[0]);
-    //calculate dist 
+    //calculate dist
     let distMax = 1000;
       if( Math.abs(this.body.x - player.body.x) < 1000 && Math.abs(this.body.y - player.body.y)< 50){
       let noise = (distMax - Math.abs(this.body.x - player.body.x));
@@ -171,50 +183,107 @@ export default class extends Phaser.Sprite {
   }
 
   update() {
-    // console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
-    if(!window.playerDetected){
-      this.wander();
+    console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
+    
+    if(!this.triggered){
+      if(!window.playerDetected){
+        this.wander();
+      }
+      else if (window.playerDetected){
+        this.chasePlayer();
+      }
+      else if (this.state == 2)
+      {
+        this.stun();
+      }
+
+      if(this.state == 2 && this.timeForMyOgłuszenie < this.game.time.now)
+      {
+        this.body.moves = true;
+        this.state = 0;
+      }
+
+      this.checkEdge();
+
+      if(this.noiseLevel > 100){
+        this.noiseLevel -= 100;
+      }
+      if(this.noiseLevel > 100000){
+        // console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
+        // alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
+        window.playerDetected = true;
+        this.noiseLevel = 0;
+      }
+      this.polyOfViewRight = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 120, this.y - 45.8),
+        new Phaser.Point(this.x + 120, this.y + 25.8)
+      ]);
+
+      this.polyOfViewRight2 = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 80.7, this.y - 36.85),
+        new Phaser.Point(this.x + 80.7, this.y + 8.85)
+      ]);
+
+      this.polyOfViewLeft2 = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 80.7, this.y - 36.35),
+        new Phaser.Point(this.x - 80.7, this.y + 8.90)
+      ]);
+
+      this.polyOfViewLeft = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 120, this.y - 45),
+        new Phaser.Point(this.x - 120, this.y + 25)
+      ]);
+      this.graphics.clear();
+      this.drawView();
+    } else{
+      this.polyOfViewRight = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 120, this.y - 45.8),
+        new Phaser.Point(this.x + 120, this.y + 25.8)
+      ]);
+
+      this.polyOfViewRight2 = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 80.7, this.y - 36.85),
+        new Phaser.Point(this.x + 80.7, this.y + 8.85)
+      ]);
+
+      this.polyOfViewLeft2 = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 80.7, this.y - 36.35),
+        new Phaser.Point(this.x - 80.7, this.y + 8.90)
+      ]);
+
+      this.polyOfViewLeft = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 120, this.y - 45),
+        new Phaser.Point(this.x - 120, this.y + 25)
+      ]);
+      this.graphics.clear();
+      this.drawView();
+      this.goToTriger();
     }
-    else{
-      this.chasePlayer();
+  }
+
+  goToTriger(){
+   
+    if(this.triggeredTime > this.game.time.now){
+      if(this.body.x > this.targetX){
+        this.facing = 'left';
+        this.runLeft();
+
+      }
+      else{
+        this.facing = 'right';
+        this.runRight();
+      }
+    }else{
+      this.triggered = 0;
     }
-
-    this.checkEdge();
-
-    if(this.noiseLevel > 100){
-      this.noiseLevel -= 100;
-    }
-    if(this.noiseLevel > 100000){
-      // console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
-      // alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
-      window.playerDetected = true;
-      this.noiseLevel = 0;
-    }
-    this.polyOfViewRight = new Phaser.Polygon([
-      new Phaser.Point(this.x + 10, this.y - 20),
-      new Phaser.Point(this.x + 120, this.y - 45.8),
-      new Phaser.Point(this.x + 120, this.y + 25.8)
-    ]);
-
-    this.polyOfViewRight2 = new Phaser.Polygon([
-      new Phaser.Point(this.x + 10, this.y - 20),
-      new Phaser.Point(this.x + 80.7, this.y - 36.85),
-      new Phaser.Point(this.x + 80.7, this.y + 8.85)
-    ]);
-
-    this.polyOfViewLeft2 = new Phaser.Polygon([
-      new Phaser.Point(this.x - 9, this.y - 20),
-      new Phaser.Point(this.x - 80.7, this.y - 36.35),
-      new Phaser.Point(this.x - 80.7, this.y + 8.90)
-    ]);
-
-    this.polyOfViewLeft = new Phaser.Polygon([
-      new Phaser.Point(this.x - 9, this.y - 20),
-      new Phaser.Point(this.x - 120, this.y - 45),
-      new Phaser.Point(this.x - 120, this.y + 25)
-    ]);
-    this.graphics.clear();
-    this.drawView();
   }
 
   drawView(){
@@ -269,7 +338,7 @@ export default class extends Phaser.Sprite {
         else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           return !this.player.sneking;
         }
-        
+
       }
     }
   }
@@ -290,17 +359,25 @@ export default class extends Phaser.Sprite {
     this.graphics.alpha = 0;
     this.graphics.endFill();
     this.kill();
+    this.player.makeNoise(2);
     
+  }
+
+  setTarget(rockX, rockY){
+    this.targetX = rockX;
+    this.targetY = rockY;
+    this.triggered = 1;
+    this.triggeredTime = this.game.time.now + 2000;
   }
 
   checkEdge(){
 
-    
+
     if(this.layer.getTiles(this.x -15, this.y +25, 30, 10,true).length == 1 && this.game.time.now- this.lastSwitchDirection >200)
       {
         this.switchDirection();
         this.lastSwitchDirection = this.game.time.now;
       }
   }
-  
+
 }
