@@ -8,6 +8,8 @@ export default class extends Phaser.State {
   }
 
   preload() {
+    var background;
+    this.background = game.add.tileSprite(0, 0, 900, 600, 'background_menu');
   }
 
   create() {
@@ -35,7 +37,6 @@ export default class extends Phaser.State {
 
   //changes new_game into true
   newGameOnClicked() {
-    console.log("lel");
     this.newGameClicked = true;
   }
 

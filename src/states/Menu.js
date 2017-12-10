@@ -11,13 +11,13 @@ export default class extends Phaser.State{
         text.anchor.setTo(0.5, 0.5)
         this.btnPlay = this.game.add.button(this.game.width * 0.5, this.game.height * 0.7, 'btnPlay', this.startGame, this, 2, 1, 0)
         this.btnPlay.anchor.setTo(0.5)
-        this.btnCredits = this.game.add.button(this.game.width * 0.9, this.game.height * 0.9, 'btnCredits', this.showCredits, this, 2, 1, 0)
-        this.btnCredits.anchor.setTo(0.5)
+        // this.btnCredits = this.game.add.button(this.game.width * 0.9, this.game.height * 0.9, 'btnCredits', this.showCredits, this, 2, 1, 0)
+        // this.btnCredits.anchor.setTo(0.5)
 
     }
 
     startGame(){
-        this.state.start('StageMenu')
+        this.state.start('Game')
     }
 
     showCredits(){
