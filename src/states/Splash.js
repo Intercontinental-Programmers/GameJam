@@ -33,6 +33,7 @@ export default class extends Phaser.State {
       this.load.image('gameOver', './assets/images/game_over.png')
       this.load.image('rock', './assets/images/rock2.png');
       this.load.image('hideable', './assets/images/hideable.png');
+      this.load.image('background_menu','assets/images/menu-background.jpg');
   }
 
   create() {
