@@ -98,12 +98,12 @@ export default class extends Phaser.State {
   }
 
   update() {
-    console.log(this.player.isVisible);
     this.game.physics.arcade.collide(this.hideable, this.layer);
     if (this.game.physics.arcade.overlap(this.hideable, this.player)) {
-      this.player.setInvisible(1);
+      this.player.isVisible = false;
+      window.playerDetected = false;
     } else {
-      this.player.setInvisible(0);
+      this.player.isVisible = true;
     }
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
@@ -123,8 +123,8 @@ export default class extends Phaser.State {
     this.movementPlayer();
 
     this.enemies.forEach(enemy => {
-      if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible == 1) {
-
+      if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible) {
+        console.log('dsa')
         window.playerDetected = true;
         this.seen = true;
         this.timeUnseen = Date.now();
@@ -403,7 +403,6 @@ export default class extends Phaser.State {
     else {
       if (fact > 1)
         fact = 1;
-      console.log("noise bar")
       this.graphics.beginFill(0x74D953);
       this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, this.NOISE_BAR_MAX * fact, 30);
     }
@@ -423,11 +422,12 @@ export default class extends Phaser.State {
   }
 
   checkTimeUndetected() {
+    console.log(Date.now() - this.timeUnseen)
     return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
   }
 
   checkTimeDetected() {
-
+    
     return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
   }
 
@@ -539,7 +539,6 @@ export default class extends Phaser.State {
 
   simpleCollision(player, enemy) {
     if ((player.body.x < enemy.body.x && enemy.facing == 'left' && player.isVisible == 1) || ((player.body.x > enemy.body.x && enemy.facing == 'right') && player.isVisible == 1)) {
-      console.log(game);
       game.state.start('GameOver');
     }
     enemy.body.velocity.x = 0;
@@ -596,7 +595,6 @@ export default class extends Phaser.State {
 
   layerRockCollision(rock, layer) {
 
-    console.log(rock.body.x);
     for (var i = 0; i < rock.enemies.length; i++)
       rock.enemies.children[i].setTarget(rock.body.x, rock.body.y);
 

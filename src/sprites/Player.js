@@ -60,7 +60,7 @@ export default class extends Phaser.Sprite {
     moveLeft() {
 
         this.body.velocity.x = -this.speed;
-        if (!this.sneking) {
+        if (!this.sneking && this.isVisible) {
             this
                 .animations
                 .play('left');
@@ -78,7 +78,7 @@ export default class extends Phaser.Sprite {
     moveRight() {
 
         this.body.velocity.x = this.speed;
-        if (!this.sneking) {
+        if (!this.sneking && this.isVisible) {
             this
                 .animations
                 .play('right');
@@ -117,7 +117,7 @@ export default class extends Phaser.Sprite {
 
         if (this.body.onFloor()) {
             this.body.velocity.y = -250;
-            this.makeNoise(3);
+            this.makeNoise(30);
             this.jumpTimer = this.game.time.now;
         }
     }
@@ -189,9 +189,11 @@ export default class extends Phaser.Sprite {
         this.coordinates[5][1] = this.y - 22;
     }
 
-    setInvisible(value)
-    {
-      this.isVisible = Math.abs(1-value);
-      window.playerDetected = false;
-    }
+    // setInvisible(value)
+    // {
+    //   this.isVisible = Math.abs(1-value);
+    //   if(this.isVisible == 0){
+    //     window.playerDetected = false;
+    //   }
+    // }
 }
