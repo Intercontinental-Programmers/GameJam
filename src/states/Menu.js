@@ -17,7 +17,7 @@ export default class extends Phaser.State{
     }
 
     startGame(){
-        this.state.start('StageMenu')
+        this.state.start('Game')
     }
 
     showCredits(){
