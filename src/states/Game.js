@@ -12,7 +12,7 @@ export default class extends Phaser.State {
     super()
     this.key_counter = 0;
     this.CHASING_TIME = 4000;
-    this.GAME_OVER_TIME = 1000;
+    this.GAME_OVER_TIME = 1500;
     window.playerDetected = false;
   }
 
