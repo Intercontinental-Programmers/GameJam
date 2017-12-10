@@ -59,7 +59,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
+    //this.addNewEnemy(500, 100);
     // this.addNewEnemy(600, 120);
     // this.addNewEnemy(550, 120);
 
@@ -109,7 +109,6 @@ export default class extends Phaser.State {
 
   }
 
-
   shootRays() {
     var intersections = [];
     var segments = this.createSegmentsFromTiles(this.layer.getTiles(this.player.x - 400, this.player.y - 400, 800, 800, true, true));
@@ -139,7 +138,7 @@ export default class extends Phaser.State {
       var uniquePoint = uniquePoints[j];
       var angle = Math.atan2(uniquePoint.y - this.player.y, uniquePoint.x - this.player.x);
       uniquePoint.angle = angle;
-      uniqueAngles.push(angle - 0.1, angle, angle + 0.1);
+      uniqueAngles.push(angle - 5, angle, angle + 5);
     }
 
     for (j = 0; j < uniqueAngles.length; j++) {
@@ -181,7 +180,25 @@ export default class extends Phaser.State {
     this.graphics.beginFill(0x000000);
     this.graphics.alpha = 0.5;
     this.graphics.drawPolygon(poly);
+    //this.layer.mask = this.graphics;
 
+        // var repare_x, repare_y;
+    // intersections.forEach(function (intersection) {
+    //   if (intersection.x > 200)
+    //     repare_x = intersection.x + 20;
+    //   else if (intersection.x < 200)
+    //     repare_x = intersection.x - 20;
+    //   else if (intersection.x == 200)
+    //     repare_x = intersection.x;
+    //   if (intersection.y > 200)
+    //     repare_y = intersection.y + 20;
+    //   else if (intersection.y < 200)
+    //     repare_y = intersection.y - 20;
+    //   else if (intersection.y == 200)
+    //     repare_y = intersection.y;
+    //   points.push(repare_x, repare_y);
+    // });
+    // var poly = new Phaser.Polygon(points);
 
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
