@@ -189,9 +189,11 @@ export default class extends Phaser.Sprite {
         this.coordinates[5][1] = this.y - 22;
     }
 
-    setInvisible(value)
-    {
-      this.isVisible = Math.abs(1-value);
-      window.playerDetected = false;
-    }
+    // setInvisible(value)
+    // {
+    //   this.isVisible = Math.abs(1-value);
+    //   if(this.isVisible == 0){
+    //     window.playerDetected = false;
+    //   }
+    // }
 }

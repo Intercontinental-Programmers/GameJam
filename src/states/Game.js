@@ -328,9 +328,10 @@ export default class extends Phaser.State {
     console.log(this.player.isVisible);
     this.game.physics.arcade.collide(this.hideable, this.layer);
     if(this.game.physics.arcade.overlap(this.hideable, this.player)){
-        this.player.setInvisible(1);
+        this.player.isVisible = 0;
+        window.playerDetected = false;
     }else{
-      this.player.setInvisible(0);
+      this.player.isVisible = 1;
     }
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
@@ -351,7 +352,7 @@ export default class extends Phaser.State {
 
     this.enemies.forEach(enemy => {
       if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible == 1) {
-
+        console.log("check");
         window.playerDetected = true;
         this.seen = true;
         this.timeUnseen = Date.now();
