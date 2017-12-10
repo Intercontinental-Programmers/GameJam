@@ -177,7 +177,7 @@ export default class extends Phaser.Sprite {
   }
 
   update() {
-    // console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
+    console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
     if(!window.playerDetected){
       this.wander();
     }
@@ -306,7 +306,8 @@ export default class extends Phaser.Sprite {
     this.graphics.alpha = 0;
     this.graphics.endFill();
     this.kill();
-
+    this.player.makeNoise(2);
+    
   }
 
   checkEdge(){

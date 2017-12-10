@@ -65,11 +65,13 @@ export default class extends Phaser.Sprite {
                 .animations
                 .play('left');
             this.facing = 'left';
+            this.makeNoise(1.3);
         } else {
             this
                 .animations
                 .play('left_sneak');
             this.facing = 'left';
+            this.makeNoise(0);
         }
     }
 
@@ -115,6 +117,7 @@ export default class extends Phaser.Sprite {
 
         if (this.body.onFloor()) {
             this.body.velocity.y = -250;
+            this.makeNoise(2);
             this.jumpTimer = this.game.time.now;
         }
     }

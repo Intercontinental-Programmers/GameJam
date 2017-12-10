@@ -260,6 +260,7 @@ export default class extends Phaser.State {
           if (Math.abs(this.player.x - enemy.x) < 50) {
             if (this.lookingAtEnemyFromBehind(this.player, enemy)) {
               enemy.killEnemy();
+
               this.enemies.remove(enemy);
             }
           }
