@@ -277,18 +277,21 @@ export default class extends Phaser.Sprite {
 
   goToTriger(){
 
-    if(this.triggeredTime > this.game.time.now){
-      if(this.body.x > this.targetX){
-        this.facing = 'left';
-        this.runLeft();
-
+    if(!window.playerDetected){
+      
+      if(this.triggeredTime > this.game.time.now){
+        if(this.body.x > this.targetX){
+          this.facing = 'left';
+          this.runLeft();
+  
+        }
+        else{
+          this.facing = 'right';
+          this.runRight();
+        }
+      }else{
+        this.triggered = 0;
       }
-      else{
-        this.facing = 'right';
-        this.runRight();
-      }
-    }else{
-      this.triggered = 0;
     }
   }
 
@@ -389,5 +392,6 @@ export default class extends Phaser.Sprite {
         this.lastSwitchDirection = this.game.time.now;
       }
   }
+
 
 }
