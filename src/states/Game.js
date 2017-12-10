@@ -5,6 +5,7 @@ import Player from '../sprites/Player'
 import Door from '../sprites/Door'
 import Key from '../sprites/Key'
 import Ladder from '../sprites/Ladder'
+import Segment from './Segment'
 
 export default class extends Phaser.State {
 
@@ -49,9 +50,9 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
-    this.addNewEnemy(600, 120);
-    this.addNewEnemy(550, 120);
+    // this.addNewEnemy(500, 100);
+    // this.addNewEnemy(600, 120);
+    // this.addNewEnemy(550, 120);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -75,6 +76,11 @@ export default class extends Phaser.State {
 
     //TIME
     this.game.time.events.add(Phaser.Timer.SECOND * 50, this.game_over, this);
+
+    var lines, map, layer, cursors, sprite, line, tileHits = [], plotting = false;
+    this.ray = new Phaser.Line();
+
+    this.graphics = game.add.graphics(0, 0);
   }
 
   addNewEnemy(posX, posY) {
@@ -90,82 +96,85 @@ export default class extends Phaser.State {
 
   }
 
-  update() {
 
-    this.game.physics.arcade.collide(this.player, this.layer);
-    this.game.physics.arcade.collide(this.enemies, this.layer);
-    this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
-    this.game.physics.arcade.collide(this.doors, this.layer);
-    this.game.physics.arcade.collide(this.keys, this.layer);
-    this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
-    this.game.physics.arcade.collide(this.ladder, this.layer);
-    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
-    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
+  shootRays() {
+    var intersections = [];
+    var segments = this.createSegmentsFromTiles(this.layer.getTiles(this.player.x - 400, this.player.y - 400, 800, 800, true, true));
+    var uniqueAngles = [];
+    var j;
+    var points = (function (segments) {
+      var a = [];
+      segments.forEach(function (segment) {
+        a.push(segment.start, segment.end);
+      });
+      return a;
+    })(segments);
+    var uniquePoints = (function (points) {
+      var set = {};
+      return points.filter(function (point) {
+        var key = point.x + ',' + point.y;
+        if (key in set) {
+          return false;
+        } else {
+          set[key] = true;
+          return true;
+        }
+      });
+    })(points);
 
-    this.enemies.setAll('body.immovable', true);
-    this.player.body.velocity.x = 0;
-    this.movementPlayer();
-    this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
-    this.updateShadowTexture();
+    for (j = 0; j < uniquePoints.length; j++) {
+      var uniquePoint = uniquePoints[j];
+      var angle = Math.atan2(uniquePoint.y - this.player.y, uniquePoint.x - this.player.x);
+      uniquePoint.angle = angle;
+      uniqueAngles.push(angle - 0.1, angle, angle + 0.1);
+    }
 
-
-
-    this.enemies.forEach(enemy => {
-      if (enemy.detectPlayer()) {
-
-        window.playerDetected = true;
-        this.seen = true;
-        this.timeUnseen = Date.now();
+    for (j = 0; j < uniqueAngles.length; j++) {
+      var angle = uniqueAngles[j];
+      var dx = Math.cos(angle);
+      var dy = Math.sin(angle);
+      this.ray.start.set(this.player.x, this.player.y);
+      this.ray.end.set(this.player.x + dx, this.player.y + dy);
+      var intersection = this.getClosestIntersection(this.ray, segments);
+      if (!!intersection && intersection.x > 0 && intersection.x < game.world.width && intersection.y > 0 && intersection.y < game.world.height) {
+        intersection.angle = angle;
+        intersections.push(intersection);
       }
-      enemy.addNoise(this.player);
+    }
+
+    return intersections;
+  }
+  drawLines(intersections) {
+    intersections.forEach(function (intersection, index) {
+      if (!!intersection) {
+        lines[index].start.set(this.player.x, this.player.y);
+        lines[index].end.set(intersection.x, intersection.y);
+      }
     });
-    if(this.player.lastNoises.length >= 1){
-      this.player.lastNoises.shift();
-    }
-    if(this.player.lastNoises.length == 0 ){
-      this.player.lastNoises.push(0);
-    }
 
-
-    if (!this.seen) {
-      this.timeSeen = Date.now();
-    }
-
-    if (this.checkTimeUndetected()) {
-      window.playerDetected = false;
-    }
-
-    if (this.checkTimeDetected()) {
-      this.game.state.start('GameOver');
-    }
-    this.seen = false;
   }
 
-  switchDirection(enemy, door){
-    // console.log('collide');
-    if(enemy.facing == 'left')
-      enemy.body.x += 2;
-    else
-      enemy.body.y -= 2;
-    enemy.switchDirection();
-  }
+  drawVisibilityPoly(intersections) {
+    this.graphics.clear();
+    intersections = intersections.sort(function (a, b) {
+      return a.angle - b.angle;
+    });
+    var points = [];
+    intersections.forEach(function (intersection) {
+      points.push(intersection.x, intersection.y);
+    });
+    var poly = new Phaser.Polygon(points);
 
-  checkTimeUndetected() {
-    // console.log(Date.now() - this.timeUnseen)
-    return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
-  }
+    this.graphics.beginFill(0x000000);
+    this.graphics.alpha = 0.5;
+    this.graphics.drawPolygon(poly);
 
-  checkTimeDetected() {
-    
-    return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
-  }
 
-  updateShadowTexture() {
+    this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
+    this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
+    this.shadowTexture.context.fillRect(-10, -10, this.game.width + 10, this.game.height + 10);
 
-    this.shadowTexture.context.fillStyle = 'rgb(2, 2, 2)';
-    //this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
-
-    var radius = 100 + this.game.rnd.integerInRange(1, 5),
+    var radius = 150 + this.game.rnd.integerInRange(1, 5),
       heroX = this.player.x - this.game.camera.x,
       heroY = this.player.y - this.game.camera.y;
 
@@ -184,6 +193,185 @@ export default class extends Phaser.State {
     this.player.updateXCoordinate();
     this.player.updateYCoordinate();
 
+  }
+  getClosestIntersection(ray, segments) {
+    //determine which side to come from
+    var intersection = null;
+    var closestIntersection;
+    var raySegment = this.createSegmentFromRay(ray);
+    var angles = [];
+    segments.forEach(function (tileSegment) {
+
+      if (raySegment.direction.x / raySegment.magnitude === tileSegment.direction.x / tileSegment.magnitude && raySegment.direction.y / raySegment.magnitude === tileSegment.direction.y / tileSegment.magnitude) {
+        return null;
+      }
+
+      //Solve for T1 and T2
+
+      var T2 = (raySegment.direction.x * (tileSegment.start.y - raySegment.start.y) + raySegment.direction.y * (raySegment.start.x - tileSegment.start.x)) / (tileSegment.direction.x * raySegment.direction.y - tileSegment.direction.y * raySegment.direction.x);
+      var T1 = (tileSegment.start.x + tileSegment.direction.x * T2 - raySegment.start.x) / raySegment.direction.x;
+
+      if (T1 < 0) {
+        return null;
+      }
+      if (T2 < 0 || T2 > 1) {
+        return null;
+      }
+
+      intersection = {
+        x: raySegment.start.x + raySegment.direction.x * T1,
+        y: raySegment.start.y + raySegment.direction.y * T1,
+        tile: tileSegment.tile
+      };
+
+      intersection.direction = {
+        x: intersection.x - raySegment.start.x,
+        y: intersection.y - raySegment.start.y,
+      };
+
+      intersection.magnitude = Math.sqrt(Math.pow(intersection.direction.x, 2) + Math.pow(intersection.direction.y, 2));
+
+      if (!closestIntersection) {
+        closestIntersection = intersection;
+      } else if (closestIntersection.magnitude > intersection.magnitude) {
+        closestIntersection = intersection;
+      }
+    }, this);
+    return closestIntersection;
+  }
+
+  createSegmentsFromTiles(tiles) {
+    var segments = [], segment;
+    tiles.forEach(function (tile) {
+      if (!!tile.faceBottom) {
+        segment = new Segment();
+        segment.start.x = tile.left;
+        segment.end.x = tile.right;
+        segment.start.y = tile.bottom;
+        segment.end.y = tile.bottom;
+        segment.tile = tile;
+        if (!(segment in segments)) {
+          segments.push(this.calculateSegmentProperties(segment));
+        }
+      }
+      if (!!tile.faceTop) {
+        segment = new Segment();
+        segment.start.x = tile.left;
+        segment.end.x = tile.right;
+        segment.start.y = tile.top;
+        segment.end.y = tile.top;
+        segment.tile = tile;
+        if (!(segment in segments)) {
+          segments.push(this.calculateSegmentProperties(segment));
+        }
+      }
+      if (!!tile.faceLeft) {
+        segment = new Segment();
+        segment.start.x = tile.left;
+        segment.end.x = tile.left;
+        segment.start.y = tile.top;
+        segment.end.y = tile.bottom;
+        segment.tile = tile;
+        if (!(segment in segments)) {
+          segments.push(this.calculateSegmentProperties(segment));
+        }
+      }
+      if (!!tile.faceRight) {
+        segment = new Segment();
+        segment.start.x = tile.right;
+        segment.end.x = tile.right;
+        segment.start.y = tile.top;
+        segment.end.y = tile.bottom;
+        segment.tile = tile;
+        if (!(segment in segments)) {
+          segments.push(this.calculateSegmentProperties(segment));
+        }
+      }
+      return segments;
+    }, this);
+
+    return segments;
+  }
+  calculateSegmentProperties(segment) {
+    segment.direction.x = segment.end.x - segment.start.x;
+    segment.direction.y = segment.end.y - segment.start.y;
+    segment.magnitude = Math.sqrt(Math.pow(segment.direction.x, 2) + Math.pow(segment.direction.y, 2));
+    return segment;
+  }
+  createSegmentFromRay(ray) {
+    var segment = new Segment();
+    segment.start = ray.start;
+    segment.end = ray.end;
+    segment.direction.x = segment.end.x - segment.start.x;
+    segment.direction.y = segment.end.y - segment.start.y;
+    segment.magnitude = Math.sqrt(Math.pow(segment.direction.x, 2) + Math.pow(segment.direction.y, 2));
+    return segment;
+  }
+
+  update() {
+
+    this.game.physics.arcade.collide(this.player, this.layer);
+    this.game.physics.arcade.collide(this.enemies, this.layer);
+    this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    this.game.physics.arcade.collide(this.doors, this.layer);
+    this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
+    this.game.physics.arcade.collide(this.ladder, this.layer);
+    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
+    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
+
+    this.enemies.setAll('body.immovable', true);
+    this.player.body.velocity.x = 0;
+    this.movementPlayer();
+
+    this.enemies.forEach(enemy => {
+      if (enemy.detectPlayer()) {
+
+        window.playerDetected = true;
+        this.seen = true;
+        this.timeUnseen = Date.now();
+      }
+      enemy.addNoise(this.player);
+    });
+    if (this.player.lastNoises.length >= 1) {
+      this.player.lastNoises.shift();
+    }
+    if (this.player.lastNoises.length == 0) {
+      this.player.lastNoises.push(0);
+    }
+
+    if (!this.seen) {
+      this.timeSeen = Date.now();
+    }
+
+    if (this.checkTimeUndetected()) {
+      window.playerDetected = false;
+    }
+
+    if (this.checkTimeDetected()) {
+      this.game.state.start('GameOver');
+    }
+    this.seen = false;
+
+    var intersections = this.shootRays();
+    this.drawVisibilityPoly(intersections);
+  }
+
+  switchDirection(enemy, door) {
+    if (enemy.facing == 'left')
+      enemy.body.x += 2;
+    else
+      enemy.body.y -= 2;
+    enemy.switchDirection();
+  }
+
+  checkTimeUndetected() {
+    return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
+  }
+
+  checkTimeDetected() {
+
+    return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
   }
 
   key_collector(player, key) {
@@ -261,12 +449,12 @@ export default class extends Phaser.State {
       return (player.body.x > enemy.body.x) && this.areOnTheSameLevel(player, enemy);
     } else if (player.facing == 'right' && enemy.facing == 'right') {
       return (player.body.x < enemy.body.x) && this.areOnTheSameLevel(player, enemy);
-    } 
-    else if(player.facing == 'idle'){
-      if(enemy.facing == 'left'){
+    }
+    else if (player.facing == 'idle') {
+      if (enemy.facing == 'left') {
         return (player.body.x > enemy.body.x) && this.areOnTheSameLevel(player, enemy);
       }
-      else{
+      else {
         return (player.body.x < enemy.body.x) && this.areOnTheSameLevel(player, enemy);
       }
     }
