@@ -122,7 +122,6 @@ export default class extends Phaser.Sprite {
   }
 
   chasePlayer() {
-    console.log('czejsuje')
     if(this.isOnTheSameLevel() && this.player.isVisible == 1){
 
       if(this.player.body.x < this.body.x){

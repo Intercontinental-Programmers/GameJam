@@ -124,7 +124,6 @@ export default class extends Phaser.State {
 
     this.enemies.forEach(enemy => {
       if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible) {
-        console.log('dsa')
         window.playerDetected = true;
         this.seen = true;
         this.timeUnseen = Date.now();
@@ -422,7 +421,7 @@ export default class extends Phaser.State {
   }
 
   checkTimeUndetected() {
-    console.log(Date.now() - this.timeUnseen)
+  
     return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
   }
 
