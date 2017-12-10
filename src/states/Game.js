@@ -52,7 +52,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    //this.addNewEnemy(500, 100);
+    this.addNewEnemy(500, 100);
     // this.addNewEnemy(600, 120);
     // this.addNewEnemy(550, 120);
 

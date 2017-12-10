@@ -1,8 +1,5 @@
-import Phaser from 'phaser'
-import { centerGameObjects } from '../utils'
-
 export default class extends Phaser.State {
-  init () {
+  init() {
     this.stage.backgroundColor = '#000'
     //true if we clicked new game
     this.newGameClicked = false;
@@ -10,18 +7,24 @@ export default class extends Phaser.State {
     this.creditsClicked = false;
   }
 
-  preload () {
+  preload() {
   }
 
-  create () {
-    let text = this.add.text(this.world.centerX, this.world.centerY - 120, 'Game Over', { font: '100px Sheriff', fill: '#fff', align: 'center' })
+  create() {
+    let text = this.add.text(this.game.width * 0.5, this.game.height * 0.3, 'Game Over', { font: '100px Sheriff', fill: '#fff', align: 'center' })
     text.anchor.setTo(0.5, 0.5)
-    let newGameButton = this.game.add.button(this.game.width * 0.5, this.game.height * 0.7, 'button', this.newGameClicked, this, 2, 1, 0)
-    let creditsButton = game.add.button(game.world.centerX, 370, 'button', this.creditsOnClick, this, 2, 1, 0);
+    let newGameButton = this.game.add.button(this.game.width * 0.5, this.game.height * 0.6, 'btnPlay', this.newGameClicked, this, 2, 1, 0)
+
+    let creditsButton = this.game.add.button(this.game.width * 0.5, this.game.height * 0.85, 'button', this.creditsOnClick, this, 2, 1, 0);
+
+    newGameButton.scale.setTo(0.8, 0.8);
+    creditsButton.scale.setTo(0.8, 0.8);
+    newGameButton.anchor.setTo(0.5, 0.5)
+    creditsButton.anchor.setTo(0.5, 0.5)
   }
 
-  render () {
-   
+  render() {
+
     if (this.newGameClicked) {
       this.state.start('Game')
     }
@@ -30,14 +33,14 @@ export default class extends Phaser.State {
     }
   }
 
- 
+
   //changes new_game into true
-  newGameOnClick(){
+  newGameOnClick() {
     this.newGameClicked = true
   }
 
   //changes credits into true
-  creditsOnClick(){
+  creditsOnClick() {
     this.creditsClicked = true
   }
 
