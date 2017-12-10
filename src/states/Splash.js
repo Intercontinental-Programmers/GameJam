@@ -30,6 +30,7 @@ export default class extends Phaser.State {
       this.load.image('button', './assets/images/blue_button.png'),
       this.load.image('logo', './asstes/images/logo.png'),
       this.load.image('gameOver', './assets/images/game_over.png')
+      this.load.image('rock', './assets/images/rock2.png');
   }
 
   create() {

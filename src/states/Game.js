@@ -5,6 +5,7 @@ import Player from '../sprites/Player'
 import Door from '../sprites/Door'
 import Key from '../sprites/Key'
 import Ladder from '../sprites/Ladder'
+import Rock from '../sprites/Rock'
 
 export default class extends Phaser.State {
 
@@ -20,6 +21,7 @@ export default class extends Phaser.State {
   preload() { }
 
   create() {
+
     this
       .game
       .physics
@@ -58,6 +60,9 @@ export default class extends Phaser.State {
     this.keys = this.game.add.group();
     this.keyIdCounter = 0;
 
+    //ROCKS
+    this.rocks = this.game.add.group();
+
     this.addKeyDoorPair(630, 300, this.genNewKey(850, 100));
     this.addKeyDoorPair(825, 550, this.genNewKey(25, 300));
 
@@ -65,6 +70,7 @@ export default class extends Phaser.State {
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    this.rockButton = this.game.input.keyboard.addKey(Phaser.Keyboard.K);
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
     this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
     this.killButtonFlag = true;
@@ -94,6 +100,8 @@ export default class extends Phaser.State {
 
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
+    this.game.physics.arcade.collide(this.player, this.rocks);
+    this.game.physics.arcade.collide(this.layer, this.rocks);
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
@@ -216,6 +224,15 @@ export default class extends Phaser.State {
     if (this.jumpButton.isDown) {
       this.player.jump();
     }
+    if (this.rockButton.isDown) {
+      this.thrown = true;
+    }
+    if(this.rockButton.isUp && this.thrown == true)
+      {
+        this.duration = this.rockButton.duration;
+        this.createRock(this.duration);
+        this.thrown = false;
+      }
 
     if (this.killButton.isDown) {
 
@@ -283,6 +300,17 @@ export default class extends Phaser.State {
     this.map.setCollisionBetween(1376, 1399);
     this.map.setCollisionBetween(1446, 1469);
     this.map.setCollisionBetween(1516, 1539);
+  }
+
+  createRock(duration) {
+    if(duration > 600)
+      duration = 600;
+    this.rock = new Rock({ game: this.game, x: this.player.x + 20, y: this.player.y, asset: 'rock', layer: this.layer });
+    this.rocks.add(this.rock);
+    this.game.add.existing(this.rocks);
+    this.rock.body.velocity.x = duration;
+    this.rock.body.velocity.y = -duration/3*2;
+    console.log(duration);
   }
 
   game_over() {
