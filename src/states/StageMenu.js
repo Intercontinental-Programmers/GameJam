@@ -4,8 +4,6 @@ export default class extends Phaser.State {
 
   preload() {
 
-    this.game.load.script('grayfilter', 'https://cdn.rawgit.com/photonstorm/phaser/master/v2/filters/Gray.js');
-
     var background;
 
     game.load.spritesheet('mission1_button', 'assets/buttons/mission1.png', 153, 167);

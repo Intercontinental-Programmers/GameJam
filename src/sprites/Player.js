@@ -10,6 +10,7 @@ export default class extends Phaser.Sprite {
             .game
             .physics
             .enable(this, Phaser.Physics.ARCADE);
+        this.lastDirection = "right";
 
         this.timeToStep = this.game.time.now;
         this.lastNoises = [0];
@@ -90,7 +91,7 @@ export default class extends Phaser.Sprite {
             this.facing = 'right';
             this.makeNoise(0);
         }
-        
+
     }
 
     moveUp() {
@@ -106,6 +107,7 @@ export default class extends Phaser.Sprite {
             .stop();
 
         this.frame = 4;
+
         this.facing = 'idle';
     }
 
@@ -122,6 +124,8 @@ export default class extends Phaser.Sprite {
             this.speed = 150;
         else if (this.sneking)
             this.speed = 50;
+        if(this.facing != 'idle')
+          this.lastDirection = this.facing;
 
         this.checkEdge();
         this.checkLadder();
