@@ -40,18 +40,16 @@ export default class extends Phaser.State {
     this.map = this.game.add.tilemap('level', 16, 16);
     this.map.addTilesetImage('tiles');
     this.game.physics.arcade.gravity.y = 800;
-    // this.hideLayer = this.map.createBlankLayer('hidden', 900, 600, 50, 50);
     this.layer = this.map.createLayer(0);
     this.add_collisions();
     this.layer.resizeWorld();
-    // this.hideLayer.resizeWorld();
 
     //PLAYER
     this.player = new Player({ game: this.game, x: 50, y: 50, asset: 'dude', layer: this.layer })
     this.game.add.existing(this.player);
 
     //HIDEABLE
-    this.hideable = new Hideable({game: this.game, x: 50, y: 50, asset: 'hideable', layer: this.hideLayer });
+    this.hideable = new Hideable({ game: this.game, x: 815, y: 300, asset: 'hideable', layer: this.hideLayer });
     this.game.add.existing(this.hideable);
 
     //LADDER
@@ -60,9 +58,11 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
-    this.addNewEnemy(800, 300);
-    this.addNewEnemy(600, 300);
+    this.addNewEnemy(400, 100);
+    this.addNewEnemy(900, 100);
+    this.addNewEnemy(950, 300);
+    this.addNewEnemy(350, 300);
+    this.addNewEnemy(500, 600);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -95,6 +95,67 @@ export default class extends Phaser.State {
     this.ray = new Phaser.Line();
 
     this.graphics = game.add.graphics(0, 0);
+  }
+
+  update() {
+    console.log(this.player.isVisible);
+    this.game.physics.arcade.collide(this.hideable, this.layer);
+    if (this.game.physics.arcade.overlap(this.hideable, this.player)) {
+      this.player.setInvisible(1);
+    } else {
+      this.player.setInvisible(0);
+    }
+    this.game.physics.arcade.collide(this.player, this.layer);
+    this.game.physics.arcade.collide(this.enemies, this.layer);
+    this.game.physics.arcade.collide(this.player, this.rocks);
+    this.game.physics.arcade.collide(this.layer, this.rocks, this.layerRockCollision);
+    this.game.physics.arcade.overlap(this.player, this.enemies, this.simpleCollision);
+    this.game.physics.arcade.collide(this.enemies, this.rocks, this.enemyRockCollision);
+    this.game.physics.arcade.collide(this.doors, this.layer);
+    this.game.physics.arcade.collide(this.keys, this.layer);
+    this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
+    this.game.physics.arcade.collide(this.ladder, this.layer);
+    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
+    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
+
+    this.enemies.setAll('body.immovable', true);
+    this.player.body.velocity.x = 0;
+    this.movementPlayer();
+
+    this.enemies.forEach(enemy => {
+      if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible == 1) {
+
+        window.playerDetected = true;
+        this.seen = true;
+        this.timeUnseen = Date.now();
+      }
+      enemy.addNoise(this.player);
+    });
+    if (this.player.lastNoises.length >= 1) {
+      this.player.lastNoises.shift();
+    }
+    if (this.player.lastNoises.length == 0) {
+      this.player.lastNoises.push(0);
+    }
+
+    if (!this.seen) {
+      this.timeSeen = Date.now();
+    }
+
+    if (this.checkTimeUndetected()) {
+      window.playerDetected = false;
+    }
+
+    if (this.checkTimeDetected()) {
+      this.game.state.start('GameOver');
+    }
+    this.seen = false;
+
+    //this.drawNoiseBar();
+    var intersections = this.shootRays();
+    this.drawVisibilityPoly(intersections);
+    this.drawShadow(); 
+
   }
 
   addNewEnemy(posX, posY) {
@@ -179,7 +240,7 @@ export default class extends Phaser.State {
     var poly = new Phaser.Polygon(points);
 
     this.drawNoiseBar();
-    
+
     this.graphics.beginFill(0x000000);
     this.graphics.alpha = 0.5;
     this.graphics.drawPolygon(poly);
@@ -298,67 +359,6 @@ export default class extends Phaser.State {
     return segment;
   }
 
-  update() {
-    console.log(this.player.isVisible);
-    this.game.physics.arcade.collide(this.hideable, this.layer);
-    if(this.game.physics.arcade.overlap(this.hideable, this.player)){
-        this.player.setInvisible(1);
-    }else{
-      this.player.setInvisible(0);
-    }
-    this.game.physics.arcade.collide(this.player, this.layer);
-    this.game.physics.arcade.collide(this.enemies, this.layer);
-    this.game.physics.arcade.collide(this.player, this.rocks);
-    this.game.physics.arcade.collide(this.layer, this.rocks, this.layerRockCollision);
-    this.game.physics.arcade.overlap(this.player, this.enemies, this.simpleCollision);
-    this.game.physics.arcade.collide(this.enemies, this.rocks, this.enemyRockCollision);
-    this.game.physics.arcade.collide(this.doors, this.layer);
-    this.game.physics.arcade.collide(this.keys, this.layer);
-    this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
-    this.game.physics.arcade.collide(this.ladder, this.layer);
-    this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
-    this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
-
-    this.enemies.setAll('body.immovable', true);
-    this.player.body.velocity.x = 0;
-    this.movementPlayer();
-
-    this.enemies.forEach(enemy => {
-      if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible == 1) {
-
-        window.playerDetected = true;
-        this.seen = true;
-        this.timeUnseen = Date.now();
-      }
-      enemy.addNoise(this.player);
-    });
-    if (this.player.lastNoises.length >= 1) {
-      this.player.lastNoises.shift();
-    }
-    if (this.player.lastNoises.length == 0) {
-      this.player.lastNoises.push(0);
-    }
-
-    if (!this.seen) {
-      this.timeSeen = Date.now();
-    }
-
-    if (this.checkTimeUndetected()) {
-      window.playerDetected = false;
-    }
-
-    if (this.checkTimeDetected()) {
-      this.game.state.start('GameOver');
-    }
-    this.seen = false;
-
-    //this.drawNoiseBar();
-    var intersections = this.shootRays();
-    this.drawVisibilityPoly(intersections);
-    this.drawShadow();0
-    
-  }
-
   drawShadow() {
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
@@ -376,7 +376,7 @@ export default class extends Phaser.State {
 
     this.shadowTexture.context.beginPath();
     this.shadowTexture.context.fillStyle = gradient;
-    this.shadowTexture.context.arc(heroX, heroY, radius, 0, Math.PI * 2, false);
+    this.shadowTexture.context.ellipse(heroX, heroY, radius, 85, 0, Math.PI * 2, false);
     this.shadowTexture.context.fill();
 
     this.shadowTexture.dirty = true;
@@ -384,9 +384,9 @@ export default class extends Phaser.State {
     this.player.updateYCoordinate();
   }
 
-  drawNoiseBar(){
+  drawNoiseBar() {
     this.graphics.beginFill(0xC7C7C7);
-    this.graphics.drawRect(this.game.camera.x +32 , this.game.camera.y + 50,160, 30);
+    this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, 160, 30);
     this.graphics.alpha = 1;
     this.graphics.endFill();
 
@@ -396,12 +396,12 @@ export default class extends Phaser.State {
 
     let fact = angriest.noiseLevel / 100000;
 
-    if(window.playerDetected){
-        this.graphics.beginFill(0xED2828);
-        this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, this.NOISE_BAR_MAX, 30);
+    if (window.playerDetected) {
+      this.graphics.beginFill(0xED2828);
+      this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, this.NOISE_BAR_MAX, 30);
     }
-    else{
-      if(fact > 1)
+    else {
+      if (fact > 1)
         fact = 1;
       console.log("noise bar")
       this.graphics.beginFill(0x74D953);
@@ -481,12 +481,11 @@ export default class extends Phaser.State {
     if (this.rockButton.isDown) {
       this.thrown = true;
     }
-    if(this.rockButton.isUp && this.thrown == true)
-      {
-        this.duration = this.rockButton.duration;
-        this.createRock(this.duration);
-        this.thrown = false;
-      }
+    if (this.rockButton.isUp && this.thrown == true) {
+      this.duration = this.rockButton.duration;
+      this.createRock(this.duration);
+      this.thrown = false;
+    }
 
     if (this.killButton.isDown) {
 
@@ -539,7 +538,7 @@ export default class extends Phaser.State {
   // }
 
   simpleCollision(player, enemy) {
-    if((player.body.x < enemy.body.x && enemy.facing == 'left'&& player.isVisible == 1)|| ((player.body.x > enemy.body.x && enemy.facing == 'right')&& player.isVisible == 1  )){
+    if ((player.body.x < enemy.body.x && enemy.facing == 'left' && player.isVisible == 1) || ((player.body.x > enemy.body.x && enemy.facing == 'right') && player.isVisible == 1)) {
       console.log(game);
       game.state.start('GameOver');
     }
@@ -578,29 +577,27 @@ export default class extends Phaser.State {
   }
 
   createRock(duration) {
-    if(duration > 600)
+    if (duration > 600)
       duration = 600;
-    this.rock = new Rock({ game: this.game, x: this.player.x, y: this.player.y - 25, asset: 'rock',enemies: this.enemies });
+    this.rock = new Rock({ game: this.game, x: this.player.x, y: this.player.y - 25, asset: 'rock', enemies: this.enemies });
     this.rocks.add(this.rock);
     this.game.add.existing(this.rocks);
-    if(this.player.lastDirection == "left")
+    if (this.player.lastDirection == "left")
       this.rock.body.velocity.x = -duration;
     else
       this.rock.body.velocity.x = duration;
-    this.rock.body.velocity.y = -duration/3*2;
+    this.rock.body.velocity.y = -duration / 3 * 2;
   }
 
-  enemyRockCollision(enemy, rock)
-  {
+  enemyRockCollision(enemy, rock) {
     enemy.myOgłuszenie();
     rock.kill();
   }
 
-  layerRockCollision(rock, layer)
-  {
+  layerRockCollision(rock, layer) {
 
     console.log(rock.body.x);
-    for(var i = 0; i < rock.enemies.length; i++)
+    for (var i = 0; i < rock.enemies.length; i++)
       rock.enemies.children[i].setTarget(rock.body.x, rock.body.y);
 
     rock.kill();
