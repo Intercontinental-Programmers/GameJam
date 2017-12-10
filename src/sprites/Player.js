@@ -60,7 +60,7 @@ export default class extends Phaser.Sprite {
     moveLeft() {
 
         this.body.velocity.x = -this.speed;
-        if (!this.sneking) {
+        if (!this.sneking && this.isVisible) {
             this
                 .animations
                 .play('left');
@@ -78,7 +78,7 @@ export default class extends Phaser.Sprite {
     moveRight() {
 
         this.body.velocity.x = this.speed;
-        if (!this.sneking) {
+        if (!this.sneking && this.isVisible) {
             this
                 .animations
                 .play('right');
