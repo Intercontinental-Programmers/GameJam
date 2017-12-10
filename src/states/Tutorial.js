@@ -37,7 +37,7 @@ export default class extends Phaser.State {
       .tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
-    this.map = this.game.add.tilemap('level', 16, 16);
+    this.map = this.game.add.tilemap('tutorial', 16, 16);
     this.map.addTilesetImage('tiles');
     this.game.physics.arcade.gravity.y = 800;
     this.layer = this.map.createLayer(0);
@@ -45,24 +45,43 @@ export default class extends Phaser.State {
     this.layer.resizeWorld();
 
     //PLAYER
-    this.player = new Player({ game: this.game, x: 50, y: 50, asset: 'dude', layer: this.layer })
+    this.player = new Player({ game: this.game, x: 300, y: 150, asset: 'dude', layer: this.layer })
     this.game.add.existing(this.player);
 
     //HIDEABLE
-    this.hideable = new Hideable({ game: this.game, x: 815, y: 300, asset: 'hideable', layer: this.hideLayer });
-    this.game.add.existing(this.hideable);
+    this.hideables = this.game.add.group();
+    this.hideable1 = new Hideable({game: this.game, x: 512, y: 400, asset: 'hideable', layer: this.layer });
+    this.hideable2 = new Hideable({game: this.game, x: 720, y: 400, asset: 'hideable', layer: this.layer });
+    this.hideable3 = new Hideable({game: this.game, x: 900, y: 400, asset: 'hideable', layer: this.layer });
+    this.game.add.existing(this.hideable1);
+    this.game.add.existing(this.hideable2);
+    this.game.add.existing(this.hideable3);
+    this.hideables.add(this.hideable1);
+    this.hideables.add(this.hideable2);
+    this.hideables.add(this.hideable3);
 
     //LADDER
-    this.ladder = new Ladder({ game: this.game, x: 1230, y: 300, asset: '', height: 800, layer: this.layer })
+    this.ladders = this.game.add.group();
+    this.ladder = new Ladder({ game: this.game, x: 370, y: 96, asset: '', height: 208, layer: this.layer })
+    this.ladder2 = new Ladder({ game: this.game, x: 500, y: 96, asset: '', height: 208, layer: this.layer })
+    this.ladder3 = new Ladder({ game: this.game, x: 1140, y: 400, asset: '', height: 800, layer: this.layer })
     this.game.add.existing(this.ladder);
+    this.game.add.existing(this.ladder3)
+    this.ladders.add(this.ladder);
+    this.ladders.add(this.ladder2);
+    this.ladders.add(this.ladder3);
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(400, 100);
-    this.addNewEnemy(900, 100);
-    this.addNewEnemy(950, 300);
-    this.addNewEnemy(350, 300);
-    this.addNewEnemy(500, 600);
+    this.addNewEnemy(100, 50);
+    this.addNewEnemy(150, 50);
+    this.addNewEnemy(512, 528);
+    this.addNewEnemy(700, 528);
+    this.addNewEnemy(900, 528);
+    this.addNewEnemy(780, 150);
+    this.addNewEnemy(1000, 600);
+    this.addNewEnemy(1100, 700);
+    this.addNewEnemy(1100, 700);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -72,8 +91,8 @@ export default class extends Phaser.State {
     //ROCKS
     this.rocks = this.game.add.group();
 
-    this.addKeyDoorPair(630, 300, this.genNewKey(850, 100));
-    this.addKeyDoorPair(825, 550, this.genNewKey(25, 300));
+    this.addKeyDoorPair(150, 150, this.genNewKey(105, 112));
+    this.addKeyDoorPair(1180, 10, this.genNewKey(720, 100));
 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
@@ -89,7 +108,7 @@ export default class extends Phaser.State {
     this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
 
     //TIME
-    this.game.time.events.add(Phaser.Timer.SECOND * 50, this.game_over, this);
+    this.game.time.events.add(Phaser.Timer.SECOND * 50000, this.game_over, this);
 
     var lines, map, layer, cursors, sprite, line, tileHits = [], plotting = false;
     this.ray = new Phaser.Line();
@@ -98,8 +117,8 @@ export default class extends Phaser.State {
   }
 
   update() {
-    this.game.physics.arcade.collide(this.hideable, this.layer);
-    if (this.game.physics.arcade.overlap(this.hideable, this.player)) {
+    this.game.physics.arcade.collide(this.hideables, this.layer);
+    if (this.game.physics.arcade.overlap(this.hideables, this.player)) {
       this.player.isVisible = false;
       window.playerDetected = false;
     } else {
@@ -113,8 +132,9 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.enemies, this.rocks, this.enemyRockCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
+
     this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
-    this.game.physics.arcade.collide(this.ladder, this.layer);
+    this.game.physics.arcade.collide(this.ladders, this.layer);
     this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
     this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
 
@@ -153,7 +173,7 @@ export default class extends Phaser.State {
     //this.drawNoiseBar();
     var intersections = this.shootRays();
     this.drawVisibilityPoly(intersections);
-    this.drawShadow();
+    //this.drawShadow();
 
   }
 
@@ -458,7 +478,7 @@ export default class extends Phaser.State {
     } else {
       this.player.stop();
     }
-    if (this.game.physics.arcade.overlap(this.ladder, this.player)) {
+    if (this.game.physics.arcade.overlap(this.ladders, this.player)) {
       this.player.body.velocity.y = -13.5;
 
       if (this.cursors.up.isDown) {
