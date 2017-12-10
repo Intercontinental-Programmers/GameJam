@@ -66,7 +66,7 @@ export default class extends Phaser.Sprite {
                 .animations
                 .play('left');
             this.facing = 'left';
-            this.makeNoise(1.3);
+            this.makeNoise(1);
 
         } else if (this.sneking && !this.fencing) {
             this
@@ -91,7 +91,7 @@ export default class extends Phaser.Sprite {
                 .play('right');
 
             this.facing = 'right';
-            this.makeNoise(1.3);
+            this.makeNoise(1);
         } else if (this.sneking && !this.fencing) {
             this
                 .animations
