@@ -61,8 +61,8 @@ export default class extends Phaser.State {
     //ENEMIES
     this.enemies = this.game.add.group();
     this.addNewEnemy(500, 100);
-    this.addNewEnemy(600, 120);
-    this.addNewEnemy(550, 120);
+    this.addNewEnemy(800, 300);
+    this.addNewEnemy(600, 300);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -178,34 +178,8 @@ export default class extends Phaser.State {
     });
     var poly = new Phaser.Polygon(points);
 
-
-
     this.drawNoiseBar();
-
-
-    this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
-    this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
-    this.shadowTexture.context.fillRect(-10, -10, this.game.width + 10, this.game.height + 10);
-
-    var radius = 150 + this.game.rnd.integerInRange(1, 5),
-      heroX = this.player.x - this.game.camera.x,
-      heroY = this.player.y - this.game.camera.y;
-
-    var gradient = this.shadowTexture.context.createRadialGradient(
-      heroX, heroY, 100 * 0.3,
-      heroX, heroY, radius);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-    this.shadowTexture.context.beginPath();
-    this.shadowTexture.context.fillStyle = gradient;
-    this.shadowTexture.context.arc(heroX, heroY, radius, 0, Math.PI * 2, false);
-    this.shadowTexture.context.fill();
-
-    this.shadowTexture.dirty = true;
-    this.player.updateXCoordinate();
-    this.player.updateYCoordinate();
-
+    
     this.graphics.beginFill(0x000000);
     this.graphics.alpha = 0.5;
     this.graphics.drawPolygon(poly);
@@ -382,10 +356,33 @@ export default class extends Phaser.State {
     //this.drawNoiseBar();
     var intersections = this.shootRays();
     this.drawVisibilityPoly(intersections);
+    this.drawShadow();0
+    
+  }
 
-    // var rect = new Phaser.Rectangle( 100, 100, 100, 100 ) ;
-    // game.debug.geom( rect, 'rgba(255,0,0,1)' ) ;
+  drawShadow() {
+    this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
+    this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
+    this.shadowTexture.context.fillRect(-20, -20, this.game.width + 20, this.game.height + 20);
 
+    var radius = 150 + this.game.rnd.integerInRange(1, 5),
+      heroX = this.player.x - this.game.camera.x,
+      heroY = this.player.y - this.game.camera.y;
+
+    var gradient = this.shadowTexture.context.createRadialGradient(
+      heroX, heroY, 100 * 0.3,
+      heroX, heroY, radius);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+    this.shadowTexture.context.beginPath();
+    this.shadowTexture.context.fillStyle = gradient;
+    this.shadowTexture.context.arc(heroX, heroY, radius, 0, Math.PI * 2, false);
+    this.shadowTexture.context.fill();
+
+    this.shadowTexture.dirty = true;
+    this.player.updateXCoordinate();
+    this.player.updateYCoordinate();
   }
 
   drawNoiseBar(){
