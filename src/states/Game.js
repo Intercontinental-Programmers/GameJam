@@ -279,9 +279,20 @@ export default class extends Phaser.State {
     return (player.body.y == enemy.body.y)
   }
 
+  // playerIsCaught(player, enemy){
+  //   return (player.body.x < enemy.body.x && enemy.facing == 'left') || (player.body.x > enemy.body.x && enemy.facing == 'right')
+  // }
+
   simpleCollision(player, enemy) {
+    if((player.body.x < enemy.body.x && enemy.facing == 'left') || (player.body.x > enemy.body.x && enemy.facing == 'right')){
+      console.log(game);
+      game.state.start('GameOver');
+    }
     enemy.body.velocity.x = 0;
   }
+
+
+
 
   add_collisions() {
     this.map.setCollisionBetween(30, 279);
