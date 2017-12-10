@@ -13,8 +13,7 @@ export default class extends Phaser.State {
   create() {
     let text = this.add.text(this.game.width * 0.5, this.game.height * 0.3, 'Game Over', { font: '100px Sheriff', fill: '#fff', align: 'center' })
     text.anchor.setTo(0.5, 0.5)
-    let newGameButton = this.game.add.button(this.game.width * 0.5, this.game.height * 0.6, 'btnPlay', this.newGameClicked, this, 2, 1, 0)
-
+    let newGameButton = this.game.add.button(this.game.width * 0.5, this.game.height * 0.6, 'btnPlay', this.newGameOnClicked, this, 2, 1, 0);
     let creditsButton = this.game.add.button(this.game.width * 0.5, this.game.height * 0.85, 'button', this.creditsOnClick, this, 2, 1, 0);
 
     newGameButton.scale.setTo(0.8, 0.8);
@@ -26,22 +25,23 @@ export default class extends Phaser.State {
   render() {
 
     if (this.newGameClicked) {
-      this.state.start('Game')
+      console.log("lel");
+      this.state.start('Game');
     }
     if (this.creditsClicked) {
       this.state.start('Credits');
     }
   }
 
-
   //changes new_game into true
-  newGameOnClick() {
-    this.newGameClicked = true
+  newGameOnClicked() {
+    console.log("lel");
+    this.newGameClicked = true;
   }
 
   //changes credits into true
   creditsOnClick() {
-    this.creditsClicked = true
+    this.creditsClicked = true;
   }
 
 }
