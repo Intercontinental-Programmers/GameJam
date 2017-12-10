@@ -138,8 +138,7 @@ export default class extends Phaser.Sprite {
   }
 
   isOnTheSameLevel(){
-
-    return Math.abs(this.player.body.y - this.body.y) < 50
+      return Math.abs(this.player.body.y - this.player.body.y) < 50;
   }
 
   checkTime(){
@@ -184,7 +183,7 @@ export default class extends Phaser.Sprite {
 
   update() {
     console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
-    
+
     if(!this.triggered){
       if(!window.playerDetected){
         this.wander();
@@ -270,7 +269,7 @@ export default class extends Phaser.Sprite {
   }
 
   goToTriger(){
-   
+
     if(this.triggeredTime > this.game.time.now){
       if(this.body.x > this.targetX){
         this.facing = 'left';
@@ -320,22 +319,22 @@ export default class extends Phaser.Sprite {
   detectPlayer(){
     if(this.facing == 'left'){
       for(var i = 0; i < 6; i++){
-        if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+        if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) && this.isVisible == 0){
           //change attitude of enemy
           return true;;
         }
-        else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+        else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])&& this.isVisible == 0){
           return !this.player.sneking;
         }
       }
     }
     else{
       for(var i = 0; i < 6; i++){
-        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) && this.isVisible == 0){
           //change enemy attitude
           return true;
         }
-        else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+        else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])&& this.isVisible == 0){
           return !this.player.sneking;
         }
 
@@ -360,7 +359,7 @@ export default class extends Phaser.Sprite {
     this.graphics.endFill();
     this.kill();
     this.player.makeNoise(2);
-    
+
   }
 
   setTarget(rockX, rockY){

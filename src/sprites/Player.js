@@ -11,7 +11,7 @@ export default class extends Phaser.Sprite {
             .physics
             .enable(this, Phaser.Physics.ARCADE);
         this.lastDirection = "right";
-
+        this.isVisible = 1;
         this.timeToStep = this.game.time.now;
         this.lastNoises = [0];
         this.layer = layer;
@@ -132,6 +132,8 @@ export default class extends Phaser.Sprite {
 
         this.checkEdge();
         this.checkLadder();
+
+
     }
 
     checkLadder() {
@@ -185,5 +187,10 @@ export default class extends Phaser.Sprite {
         this.coordinates[3][1] = this.y + 22;
         this.coordinates[4][1] = this.y - 22;
         this.coordinates[5][1] = this.y - 22;
+    }
+
+    setInvisible(value)
+    {
+      this.isVisible = Math.abs(1-value);
     }
 }
