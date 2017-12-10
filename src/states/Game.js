@@ -15,6 +15,7 @@ export default class extends Phaser.State {
     this.key_counter = 0;
     this.CHASING_TIME = 2000;
     this.GAME_OVER_TIME = 2000;
+    this.NOISE_BAR_MAX = 160;
     window.playerDetected = false;
   }
 
@@ -52,7 +53,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
+    //this.addNewEnemy(500, 100);
     // this.addNewEnemy(600, 120);
     // this.addNewEnemy(550, 120);
 
@@ -170,28 +171,10 @@ export default class extends Phaser.State {
     });
     var poly = new Phaser.Polygon(points);
 
-    this.graphics.beginFill(0x000000);
-    this.graphics.alpha = 0.5;
-    this.graphics.drawPolygon(poly);
-    //this.layer.mask = this.graphics;
+    
 
-        // var repare_x, repare_y;
-    // intersections.forEach(function (intersection) {
-    //   if (intersection.x > 200)
-    //     repare_x = intersection.x + 20;
-    //   else if (intersection.x < 200)
-    //     repare_x = intersection.x - 20;
-    //   else if (intersection.x == 200)
-    //     repare_x = intersection.x;
-    //   if (intersection.y > 200)
-    //     repare_y = intersection.y + 20;
-    //   else if (intersection.y < 200)
-    //     repare_y = intersection.y - 20;
-    //   else if (intersection.y == 200)
-    //     repare_y = intersection.y;
-    //   points.push(repare_x, repare_y);
-    // });
-    // var poly = new Phaser.Polygon(points);
+    this.drawNoiseBar();
+
 
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
@@ -215,7 +198,10 @@ export default class extends Phaser.State {
     this.shadowTexture.dirty = true;
     this.player.updateXCoordinate();
     this.player.updateYCoordinate();
-
+    
+    this.graphics.beginFill(0x000000);
+    this.graphics.alpha = 0.5;
+    this.graphics.drawPolygon(poly);
   }
   getClosestIntersection(ray, segments) {
     //determine which side to come from
@@ -351,7 +337,7 @@ export default class extends Phaser.State {
     this.movementPlayer();
 
     this.enemies.forEach(enemy => {
-      if (enemy.detectPlayer()) {
+      if (enemy.detectPlayer() || enemy.noiseLevel >= 100000) {
 
         window.playerDetected = true;
         this.seen = true;
@@ -379,9 +365,44 @@ export default class extends Phaser.State {
     }
     this.seen = false;
 
+    //this.drawNoiseBar();
     var intersections = this.shootRays();
     this.drawVisibilityPoly(intersections);
+    
+    // var rect = new Phaser.Rectangle( 100, 100, 100, 100 ) ;
+    // game.debug.geom( rect, 'rgba(255,0,0,1)' ) ;
+    
   }
+
+  drawNoiseBar(){
+    this.graphics.beginFill(0xC7C7C7);
+    this.graphics.drawRect(this.game.camera.x +32 , this.game.camera.y + 50,160, 30);
+    this.graphics.alpha = 1;
+    this.graphics.endFill();
+
+    this.enemies.sort('noiseLevel', Phaser.Group.SORT_DESCENDING);
+
+    const angriest = this.enemies.getAt(0);
+
+    let fact = angriest.noiseLevel / 100000;
+
+    if(window.playerDetected){
+        this.graphics.beginFill(0xED2828);
+        this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, this.NOISE_BAR_MAX, 30);
+    }
+    else{
+      if(fact > 1)
+        fact = 1;
+      console.log("noise bar")
+      this.graphics.beginFill(0x74D953);
+      this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, this.NOISE_BAR_MAX * fact, 30);
+    }
+
+   
+    this.graphics.alpha = 1;
+    this.graphics.endFill();
+  }
+
 
   switchDirection(enemy, door) {
     if (enemy.facing == 'left')
