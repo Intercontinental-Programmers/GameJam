@@ -79,9 +79,9 @@ export default class extends Phaser.State {
     this.game.camera.follow(this.player);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    this.rockButton = this.game.input.keyboard.addKey(Phaser.Keyboard.K);
+    this.rockButton = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
     this.killButton = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
-    this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+    this.sneakyButton = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
     this.killButtonFlag = true;
 
     this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
@@ -89,7 +89,7 @@ export default class extends Phaser.State {
     this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
 
     //TIME
-    this.game.time.events.add(Phaser.Timer.SECOND * 50, this.game_over, this);
+    this.game.time.events.add(Phaser.Timer.SECOND * 80, this.game_over, this);
 
     var lines, map, layer, cursors, sprite, line, tileHits = [], plotting = false;
     this.ray = new Phaser.Line();

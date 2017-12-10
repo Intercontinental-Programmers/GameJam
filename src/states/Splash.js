@@ -34,6 +34,7 @@ export default class extends Phaser.State {
       this.load.image('rock', './assets/images/rock2.png');
       this.load.image('hideable', './assets/images/hideable.png');
       this.load.image('background_menu','assets/images/menu-background.jpg');
+      this.load.image('background_go','assets/images/go-background.jpg');
   }
 
   create() {
