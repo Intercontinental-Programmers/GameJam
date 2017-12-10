@@ -49,9 +49,9 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
-    this.addNewEnemy(1000, 300);
-    this.addNewEnemy(800, 550);
+    this.addNewEnemy(200, 100);
+    this.addNewEnemy(800, 300);
+    this.addNewEnemy(600, 300);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -97,7 +97,7 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
-    this.game.physics.arcade.collide(this.enemies, this.doors);
+    this.game.physics.arcade.collide(this.enemies, this.doors, this.switchDirection);
     this.game.physics.arcade.collide(this.ladder, this.layer);
     this.game.physics.arcade.collide(this.player, this.doors, Door.unlockDoor);
     this.game.physics.arcade.overlap(this.player, this.keys, this.key_collector, null, this);
@@ -132,6 +132,15 @@ export default class extends Phaser.State {
       this.game.state.start('GameOver');
     }
     this.seen = false;
+  }
+
+  switchDirection(enemy, door){
+    console.log('collide');
+    if(enemy.facing == 'left')
+      enemy.body.x += 2;
+    else
+      enemy.body.y -= 2;
+    enemy.switchDirection();
   }
 
   checkTimeUndetected() {
