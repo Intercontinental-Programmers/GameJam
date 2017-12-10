@@ -123,7 +123,7 @@ export default class extends Phaser.Sprite {
 
   chasePlayer() {
     console.log('czejsuje')
-    if(this.isOnTheSameLevel()){
+    if(this.isOnTheSameLevel() && this.player.isVisible == 1){
 
       if(this.player.body.x < this.body.x){
         this.facing = 'left';
@@ -319,22 +319,22 @@ export default class extends Phaser.Sprite {
   detectPlayer(){
     if(this.facing == 'left'){
       for(var i = 0; i < 6; i++){
-        if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) && this.isVisible == 0){
+        if(this.polyOfViewLeft2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           //change attitude of enemy
           return true;;
         }
-        else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])&& this.isVisible == 0){
+        else if(this.polyOfViewLeft.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           return !this.player.sneking;
         }
       }
     }
     else{
       for(var i = 0; i < 6; i++){
-        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) && this.isVisible == 0){
+        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) ){
           //change enemy attitude
           return true;
         }
-        else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])&& this.isVisible == 0){
+        else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           return !this.player.sneking;
         }
 

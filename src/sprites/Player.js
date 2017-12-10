@@ -192,5 +192,6 @@ export default class extends Phaser.Sprite {
     setInvisible(value)
     {
       this.isVisible = Math.abs(1-value);
+      window.playerDetected = false;
     }
 }

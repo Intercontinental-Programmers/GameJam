@@ -59,9 +59,9 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    //this.addNewEnemy(500, 100);
-    // this.addNewEnemy(600, 120);
-    // this.addNewEnemy(550, 120);
+    this.addNewEnemy(500, 100);
+    this.addNewEnemy(600, 120);
+    this.addNewEnemy(550, 120);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -364,7 +364,7 @@ export default class extends Phaser.State {
     this.movementPlayer();
 
     this.enemies.forEach(enemy => {
-      if (enemy.detectPlayer()) {
+      if (enemy.detectPlayer() && this.player.isVisible == 1) {
 
         window.playerDetected = true;
         this.seen = true;
@@ -392,8 +392,8 @@ export default class extends Phaser.State {
     }
     this.seen = false;
 
-    var intersections = this.shootRays();
-    this.drawVisibilityPoly(intersections);
+    // var intersections = this.shootRays();
+    // this.drawVisibilityPoly(intersections);
   }
 
   switchDirection(enemy, door) {
