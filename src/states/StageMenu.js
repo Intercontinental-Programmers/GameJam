@@ -31,7 +31,7 @@ export default class extends Phaser.State {
     this.background = game.add.tileSprite(0, 0, 900, 600, 'background');
 
     this.mission1_button = game.add.button(game.world.centerX - 100, 180, 'mission-completed_button', this.actionOnClick, this, 2, 1, 0);
-    this.mission2_button = game.add.button(game.world.centerX - 20, 250, 'mission2_button', this.actionOnClick, this, 2, 1, 0);
+    this.mission2_button = game.add.button(game.world.centerX - 20, 250, 'mission2_button', this.startGame, this, 2, 1, 0);
     this.mission3_button = game.add.button(game.world.centerX - 120, 320, 'mission3_locked_button', this.actionOnClick, this, 2, 1, 0);
     this.mission4_button = game.add.button(game.world.centerX - 250, 350, 'mission4_locked_button', this.actionOnClick, this, 2, 1, 0);
     this.mission5_button = game.add.button(game.world.centerX - 400, 370, 'mission5_locked_button', this.actionOnClick, this, 2, 1, 0);
@@ -74,6 +74,10 @@ export default class extends Phaser.State {
 
   actionOnClick (button) {
 
+  }
+
+  startGame(){
+    this.state.start('Game')
   }
 
 }
