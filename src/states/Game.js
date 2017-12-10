@@ -344,7 +344,7 @@ export default class extends Phaser.State {
   createRock(duration) {
     if(duration > 600)
       duration = 600;
-    this.rock = new Rock({ game: this.game, x: this.player.x, y: this.player.y - 25, asset: 'rock', layer: this.layer });
+    this.rock = new Rock({ game: this.game, x: this.player.x, y: this.player.y - 25, asset: 'rock',enemies: this.enemies });
     this.rocks.add(this.rock);
     this.game.add.existing(this.rocks);
     if(this.player.lastDirection == "left")
@@ -362,6 +362,11 @@ export default class extends Phaser.State {
 
   layerRockCollision(rock, layer)
   {
+
+    console.log(rock.body.x);
+    for(var i = 0; i < rock.enemies.length; i++)
+      rock.enemies.children[i].setTarget(rock.body.x, rock.body.y);
+   
     rock.kill();
   }
   game_over() {

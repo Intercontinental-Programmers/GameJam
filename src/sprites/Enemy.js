@@ -27,6 +27,12 @@ export default class extends Phaser.Sprite {
 
     this.sharedState = sharedState;
 
+    this.targetX = 0;
+    this.targetY = 0;
+    this.triggered = 0;
+    this.triggeredTime = this.game.time.now;
+
+
     this.timeToStep = this.game.time.now;
     this.lastSwitchDirection = this.game.time.now;
     this
@@ -178,59 +184,106 @@ export default class extends Phaser.Sprite {
 
   update() {
     console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
-    if(!window.playerDetected){
-      this.wander();
-    }
-    else if (window.playerDetected){
-      this.chasePlayer();
-    }
-    else if (this.state == 2)
-    {
-      this.stun();
-    }
+    
+    if(!this.triggered){
+      if(!window.playerDetected){
+        this.wander();
+      }
+      else if (window.playerDetected){
+        this.chasePlayer();
+      }
+      else if (this.state == 2)
+      {
+        this.stun();
+      }
 
-    if(this.state == 2 && this.timeForMyOgłuszenie < this.game.time.now)
-    {
-      this.body.moves = true;
-      this.state = 0;
+      if(this.state == 2 && this.timeForMyOgłuszenie < this.game.time.now)
+      {
+        this.body.moves = true;
+        this.state = 0;
+      }
+
+      this.checkEdge();
+
+      if(this.noiseLevel > 100){
+        this.noiseLevel -= 100;
+      }
+      if(this.noiseLevel > 100000){
+        // console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
+        // alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
+        window.playerDetected = true;
+        this.noiseLevel = 0;
+      }
+      this.polyOfViewRight = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 120, this.y - 45.8),
+        new Phaser.Point(this.x + 120, this.y + 25.8)
+      ]);
+
+      this.polyOfViewRight2 = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 80.7, this.y - 36.85),
+        new Phaser.Point(this.x + 80.7, this.y + 8.85)
+      ]);
+
+      this.polyOfViewLeft2 = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 80.7, this.y - 36.35),
+        new Phaser.Point(this.x - 80.7, this.y + 8.90)
+      ]);
+
+      this.polyOfViewLeft = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 120, this.y - 45),
+        new Phaser.Point(this.x - 120, this.y + 25)
+      ]);
+      this.graphics.clear();
+      this.drawView();
+    } else{
+      this.polyOfViewRight = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 120, this.y - 45.8),
+        new Phaser.Point(this.x + 120, this.y + 25.8)
+      ]);
+
+      this.polyOfViewRight2 = new Phaser.Polygon([
+        new Phaser.Point(this.x + 10, this.y - 20),
+        new Phaser.Point(this.x + 80.7, this.y - 36.85),
+        new Phaser.Point(this.x + 80.7, this.y + 8.85)
+      ]);
+
+      this.polyOfViewLeft2 = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 80.7, this.y - 36.35),
+        new Phaser.Point(this.x - 80.7, this.y + 8.90)
+      ]);
+
+      this.polyOfViewLeft = new Phaser.Polygon([
+        new Phaser.Point(this.x - 9, this.y - 20),
+        new Phaser.Point(this.x - 120, this.y - 45),
+        new Phaser.Point(this.x - 120, this.y + 25)
+      ]);
+      this.graphics.clear();
+      this.drawView();
+      this.goToTriger();
     }
+  }
 
-    this.checkEdge();
+  goToTriger(){
+   
+    if(this.triggeredTime > this.game.time.now){
+      if(this.body.x > this.targetX){
+        this.facing = 'left';
+        this.runLeft();
 
-    if(this.noiseLevel > 100){
-      this.noiseLevel -= 100;
+      }
+      else{
+        this.facing = 'right';
+        this.runRight();
+      }
+    }else{
+      this.triggered = 0;
     }
-    if(this.noiseLevel > 100000){
-      // console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
-      // alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
-      window.playerDetected = true;
-      this.noiseLevel = 0;
-    }
-    this.polyOfViewRight = new Phaser.Polygon([
-      new Phaser.Point(this.x + 10, this.y - 20),
-      new Phaser.Point(this.x + 120, this.y - 45.8),
-      new Phaser.Point(this.x + 120, this.y + 25.8)
-    ]);
-
-    this.polyOfViewRight2 = new Phaser.Polygon([
-      new Phaser.Point(this.x + 10, this.y - 20),
-      new Phaser.Point(this.x + 80.7, this.y - 36.85),
-      new Phaser.Point(this.x + 80.7, this.y + 8.85)
-    ]);
-
-    this.polyOfViewLeft2 = new Phaser.Polygon([
-      new Phaser.Point(this.x - 9, this.y - 20),
-      new Phaser.Point(this.x - 80.7, this.y - 36.35),
-      new Phaser.Point(this.x - 80.7, this.y + 8.90)
-    ]);
-
-    this.polyOfViewLeft = new Phaser.Polygon([
-      new Phaser.Point(this.x - 9, this.y - 20),
-      new Phaser.Point(this.x - 120, this.y - 45),
-      new Phaser.Point(this.x - 120, this.y + 25)
-    ]);
-    this.graphics.clear();
-    this.drawView();
   }
 
   drawView(){
@@ -308,6 +361,13 @@ export default class extends Phaser.Sprite {
     this.kill();
     this.player.makeNoise(2);
     
+  }
+
+  setTarget(rockX, rockY){
+    this.targetX = rockX;
+    this.targetY = rockY;
+    this.triggered = 1;
+    this.triggeredTime = this.game.time.now + 2000;
   }
 
   checkEdge(){
