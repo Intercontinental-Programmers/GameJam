@@ -12,6 +12,7 @@ export default class extends Phaser.Sprite {
             .enable(this, Phaser.Physics.ARCADE);
 
         this.timeToStep = this.game.time.now;
+        this.lastNoises = [0];
         this.layer = layer;
         //coordinates to check if polyView of Enemy contains Player
         //(x,y)
@@ -80,13 +81,16 @@ export default class extends Phaser.Sprite {
                 .play('right');
 
             this.facing = 'right';
+            this.makeNoise(1.3);
         } else {
             this
                 .animations
                 .play('right_sneak');
 
             this.facing = 'right';
+            this.makeNoise(0);
         }
+        
     }
 
     moveUp() {
@@ -144,6 +148,12 @@ export default class extends Phaser.Sprite {
                 // console.log("Left: " + this.layer.getTiles(this.x , this.y + 15, (-20), 5, true) );
             }
         }
+    }
+
+
+    makeNoise(value){
+        this.lastNoises.push(value);
+        console.log(this.lastNoises);
     }
 
     setOnLadder(status) {

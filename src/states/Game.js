@@ -50,8 +50,8 @@ export default class extends Phaser.State {
     //ENEMIES
     this.enemies = this.game.add.group();
     this.addNewEnemy(500, 100);
-    this.addNewEnemy(800, 300);
-    this.addNewEnemy(600, 300);
+    this.addNewEnemy(1000, 300);
+    this.addNewEnemy(800, 550);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -117,7 +117,14 @@ export default class extends Phaser.State {
         this.seen = true;
         this.timeUnseen = Date.now();
       }
+      enemy.addNoise(this.player);
     });
+    if(this.player.lastNoises.length >= 1){
+      this.player.lastNoises.shift();
+    }
+    if(this.player.lastNoises.length == 0 ){
+      this.player.lastNoises.push(0);
+    }
 
 
     if (!this.seen) {
