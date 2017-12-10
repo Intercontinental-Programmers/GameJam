@@ -154,7 +154,7 @@ export default class extends Phaser.State {
     //this.drawNoiseBar();
     var intersections = this.shootRays();
     this.drawVisibilityPoly(intersections);
-    this.drawShadow(); 
+    this.drawShadow();
 
   }
 
@@ -427,7 +427,7 @@ export default class extends Phaser.State {
   }
 
   checkTimeDetected() {
-    
+
     return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
   }
 
@@ -488,6 +488,7 @@ export default class extends Phaser.State {
     }
 
     if (this.killButton.isDown) {
+      this.player.fencing = 1;
 
       if (this.killButtonFlag) {
 
@@ -503,8 +504,9 @@ export default class extends Phaser.State {
         this.killButtonFlag = false;
       }
     }
+    else if (this.killButton.isUp) {
+      this.player.fencing = 0;
 
-    if (this.killButton.isUp) {
       this.killButtonFlag = true;
     }
   }

@@ -55,37 +55,44 @@ export default class extends Phaser.Sprite {
         this.jumpTimer = this.game.time.now;
         this.sneking = 0;
         this.inventory = [];
+        this.fencing = 0;
     }
 
     moveLeft() {
 
         this.body.velocity.x = -this.speed;
-        if (!this.sneking && this.isVisible) {
+        if (!this.sneking && !this.fencing) {
             this
                 .animations
                 .play('left');
             this.facing = 'left';
             this.makeNoise(1.3);
-        } else {
+
+        } else if (this.sneking && !this.fencing) {
             this
                 .animations
                 .play('left_sneak');
             this.facing = 'left';
             this.makeNoise(0);
-        }
+        } else if (this.facing) {
+            this
+                .animations
+                .play('left_upper');
+            this.facing = 'right';
+        };
     }
 
     moveRight() {
 
         this.body.velocity.x = this.speed;
-        if (!this.sneking && this.isVisible) {
+        if (!this.sneking && !this.fencing) {
             this
                 .animations
                 .play('right');
 
             this.facing = 'right';
             this.makeNoise(1.3);
-        } else {
+        } else if (this.sneking && !this.fencing) {
             this
                 .animations
                 .play('right_sneak');
@@ -93,6 +100,12 @@ export default class extends Phaser.Sprite {
             this.facing = 'right';
             this.makeNoise(0);
         }
+        else if (this.facing) {
+            this
+                .animations
+                .play('right_upper');
+            this.facing = 'right';
+        };
 
     }
 
@@ -127,8 +140,8 @@ export default class extends Phaser.Sprite {
             this.speed = 150;
         else if (this.sneking)
             this.speed = 50;
-        if(this.facing != 'idle')
-          this.lastDirection = this.facing;
+        if (this.facing != 'idle')
+            this.lastDirection = this.facing;
 
         this.checkEdge();
         this.checkLadder();
@@ -160,7 +173,7 @@ export default class extends Phaser.Sprite {
     }
 
 
-    makeNoise(value){
+    makeNoise(value) {
         this.lastNoises.push(value);
         // console.log(this.lastNoises);
     }
