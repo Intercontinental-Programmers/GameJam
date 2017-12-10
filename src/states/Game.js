@@ -52,7 +52,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
+    //this.addNewEnemy(500, 100);
     // this.addNewEnemy(600, 120);
     // this.addNewEnemy(550, 120);
 
@@ -102,7 +102,6 @@ export default class extends Phaser.State {
 
   }
 
-
   shootRays() {
     var intersections = [];
     var segments = this.createSegmentsFromTiles(this.layer.getTiles(this.player.x - 400, this.player.y - 400, 800, 800, true, true));
@@ -132,7 +131,7 @@ export default class extends Phaser.State {
       var uniquePoint = uniquePoints[j];
       var angle = Math.atan2(uniquePoint.y - this.player.y, uniquePoint.x - this.player.x);
       uniquePoint.angle = angle;
-      uniqueAngles.push(angle - 0.1, angle, angle + 0.1);
+      uniqueAngles.push(angle - 5, angle, angle + 5);
     }
 
     for (j = 0; j < uniqueAngles.length; j++) {
