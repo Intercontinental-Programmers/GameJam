@@ -47,6 +47,7 @@ export default class extends Phaser.Sprite {
     this.body.velocity.x = 0;
     this.facing = this.genFirstDirection();
     this.jumpTimer = this.game.time.now;
+    this.noiseLevel = 0;
     
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x, this.y - 23),
@@ -149,8 +150,22 @@ export default class extends Phaser.Sprite {
     }
   }
 
-  update() {
 
+  addNoise(player){
+//console.log(player.lastNoises[0]);
+    //calculate dist 
+    let distMax = 1000;
+      if( Math.abs(this.body.x - player.body.x) < 1000 && Math.abs(this.body.y - player.body.y)< 50){
+      let noise = (distMax - Math.abs(this.body.x - player.body.x));
+      noise *= player.lastNoises[0];
+      console.log("Distans: " +(distMax-Math.abs(this.body.x - player.body.x)) + "  12312     Generowany hałas: " + noise);
+      //alert("das");
+      this.noiseLevel += noise;
+    }
+  }
+
+  update() {
+    console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
     if(!window.playerDetected){
       this.wander();
     }
@@ -160,6 +175,14 @@ export default class extends Phaser.Sprite {
 
     this.checkEdge();
 
+    if(this.noiseLevel > 100){
+      this.noiseLevel -= 100;
+    }
+    if(this.noiseLevel > 100000){
+      console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
+      alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
+      this.noiseLevel = 0;
+    }
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x + 10, this.y - 20),
       new Phaser.Point(this.x + 120, this.y - 45.8),
