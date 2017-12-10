@@ -101,8 +101,9 @@ export default class extends Phaser.State {
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
     this.game.physics.arcade.collide(this.player, this.rocks);
-    this.game.physics.arcade.collide(this.layer, this.rocks);
+    this.game.physics.arcade.collide(this.layer, this.rocks, this.layerRockCollision);
     this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    this.game.physics.arcade.collide(this.enemies, this.rocks, this.enemyRockCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.doors);
@@ -305,14 +306,26 @@ export default class extends Phaser.State {
   createRock(duration) {
     if(duration > 600)
       duration = 600;
-    this.rock = new Rock({ game: this.game, x: this.player.x + 20, y: this.player.y, asset: 'rock', layer: this.layer });
+    this.rock = new Rock({ game: this.game, x: this.player.x, y: this.player.y - 25, asset: 'rock', layer: this.layer });
     this.rocks.add(this.rock);
     this.game.add.existing(this.rocks);
-    this.rock.body.velocity.x = duration;
+    if(this.player.lastDirection == "left")
+      this.rock.body.velocity.x = -duration;
+    else
+      this.rock.body.velocity.x = duration;
     this.rock.body.velocity.y = -duration/3*2;
-    console.log(duration);
   }
 
+  enemyRockCollision(enemy, rock)
+  {
+    enemy.myOgłuszenie();
+    rock.kill();
+  }
+
+  layerRockCollision(rock, layer)
+  {
+    rock.kill();
+  }
   game_over() {
     this.game.state.start('GameOver');
   }

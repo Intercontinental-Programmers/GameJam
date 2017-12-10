@@ -14,4 +14,4 @@ export default class extends Phaser.Sprite {
         this.enableBody = true;
         this.body.collideWorldBounds = true;
         }
-}
+      }

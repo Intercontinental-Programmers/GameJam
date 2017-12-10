@@ -10,6 +10,7 @@ export default class extends Phaser.Sprite {
             .game
             .physics
             .enable(this, Phaser.Physics.ARCADE);
+        this.lastDirection = "right";
 
         this.timeToStep = this.game.time.now;
         this.layer = layer;
@@ -102,6 +103,8 @@ export default class extends Phaser.Sprite {
             .stop();
 
         this.frame = 4;
+        if(this.facing != 'idle')
+          this.lastDirection = this.facing;
         this.facing = 'idle';
     }
 

@@ -21,8 +21,9 @@ export default class extends Phaser.Sprite {
     this.player = player;
     //speed of movement
     this.SPEED = 70;
-    //0 - wander, 1 - chase
+    //0 - wander, 1 - chase, 2 - myOgłuszenie
     this.state = 0;
+    this.timeForMyOgłuszenie = this.game.time.now + 4000;
 
     this.sharedState = sharedState;
 
@@ -47,7 +48,7 @@ export default class extends Phaser.Sprite {
     this.body.velocity.x = 0;
     this.facing = this.genFirstDirection();
     this.jumpTimer = this.game.time.now;
-    
+
     this.polyOfViewRight = new Phaser.Polygon([
       new Phaser.Point(this.x, this.y - 23),
       new Phaser.Point(this.x + 100, this.y - 48),
@@ -78,9 +79,9 @@ export default class extends Phaser.Sprite {
   }
 
   wander() {
-  
+
     //if elapsed time < generated time
-    if(this.checkTime()){
+    if(this.checkTime() ){
       if(this.facing == 'left'){
         this.body.velocity.x  = -this.SPEED;
         this.animations.play('left');
@@ -94,6 +95,12 @@ export default class extends Phaser.Sprite {
     else{
       this.switchDirection();
     }
+  }
+
+  myOgłuszenie() {
+    this.state = 2;
+    this.body.moves = false;
+    this.timeForMyOgłuszenie = this.game.time.now + 4000;
   }
 
   runLeft(){
@@ -111,11 +118,11 @@ export default class extends Phaser.Sprite {
   chasePlayer() {
 
     if(this.isOnTheSameLevel()){
-    
+
       if(this.player.body.x < this.body.x){
         this.facing = 'left';
         this.runLeft();
-       
+
       }
       else{
         this.facing = 'right';
@@ -155,13 +162,40 @@ export default class extends Phaser.Sprite {
     }
   }
 
+  stun(){
+    this.graphics.beginFill(0xFF33ff);
+    if (this.moveLeft === 0) {
+      this.graphics.drawPolygon(this.polyOfViewLeft.points);
+      this.graphics.beginFill(0xFFFFff);
+      this.graphics.drawPolygon(this.polyOfViewLeft2.points);
+    }
+    else {
+      this.graphics.beginFill(0xFF33ff);
+      this.graphics.drawPolygon(this.polyOfViewRight.points);
+      this.graphics.beginFill(0xFFFFff);
+      this.graphics.drawPolygon(this.polyOfViewRight2.points);
+    }
+    this.graphics.alpha = 0;
+    this.graphics.endFill();
+  }
+
   update() {
 
-    if(!window.playerDetected){
+    if(!window.playerDetected && this.state != 2){
       this.wander();
     }
-    else{
+    else if (window.playerDetected){
       this.chasePlayer();
+    }
+    else if (this.state == 2)
+    {
+      this.stun();
+    }
+
+    if(this.state == 2 && this.timeForMyOgłuszenie < this.game.time.now)
+    {
+      this.body.moves = true;
+      this.state = 0;
     }
 
     this.checkEdge();
@@ -245,7 +279,7 @@ export default class extends Phaser.Sprite {
         else if(this.polyOfViewRight.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
           return !this.player.sneking;
         }
-        
+
       }
     }
   }
@@ -266,17 +300,17 @@ export default class extends Phaser.Sprite {
     this.graphics.alpha = 0;
     this.graphics.endFill();
     this.kill();
-    
+
   }
 
   checkEdge(){
 
-    
+
     if(this.layer.getTiles(this.x -15, this.y +25, 30, 10,true).length == 1 && this.game.time.now- this.lastSwitchDirection >200)
       {
         this.switchDirection();
         this.lastSwitchDirection = this.game.time.now;
       }
   }
-  
+
 }
