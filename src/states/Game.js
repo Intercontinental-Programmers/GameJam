@@ -7,6 +7,7 @@ import Key from '../sprites/Key'
 import Ladder from '../sprites/Ladder'
 import Segment from './Segment'
 import Rock from '../sprites/Rock'
+import Hideable from '../sprites/Hideable'
 
 export default class extends Phaser.State {
 
@@ -39,13 +40,19 @@ export default class extends Phaser.State {
     this.map = this.game.add.tilemap('level', 16, 16);
     this.map.addTilesetImage('tiles');
     this.game.physics.arcade.gravity.y = 800;
+    // this.hideLayer = this.map.createBlankLayer('hidden', 900, 600, 50, 50);
     this.layer = this.map.createLayer(0);
     this.add_collisions();
     this.layer.resizeWorld();
+    // this.hideLayer.resizeWorld();
 
     //PLAYER
     this.player = new Player({ game: this.game, x: 50, y: 50, asset: 'dude', layer: this.layer })
     this.game.add.existing(this.player);
+
+    //HIDEABLE
+    this.hideable = new Hideable({game: this.game, x: 50, y: 50, asset: 'hideable', layer: this.hideLayer });
+    this.game.add.existing(this.hideable);
 
     //LADDER
     this.ladder = new Ladder({ game: this.game, x: 1230, y: 300, asset: '', height: 800, layer: this.layer })
@@ -54,8 +61,8 @@ export default class extends Phaser.State {
     //ENEMIES
     this.enemies = this.game.add.group();
     this.addNewEnemy(500, 100);
-    // this.addNewEnemy(600, 120);
-    // this.addNewEnemy(550, 120);
+    this.addNewEnemy(800, 300);
+    this.addNewEnemy(600, 300);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -292,12 +299,18 @@ export default class extends Phaser.State {
   }
 
   update() {
-
+    console.log(this.player.isVisible);
+    this.game.physics.arcade.collide(this.hideable, this.layer);
+    if(this.game.physics.arcade.overlap(this.hideable, this.player)){
+        this.player.setInvisible(1);
+    }else{
+      this.player.setInvisible(0);
+    }
     this.game.physics.arcade.collide(this.player, this.layer);
     this.game.physics.arcade.collide(this.enemies, this.layer);
     this.game.physics.arcade.collide(this.player, this.rocks);
     this.game.physics.arcade.collide(this.layer, this.rocks, this.layerRockCollision);
-    this.game.physics.arcade.collide(this.player, this.enemies, this.simpleCollision);
+    this.game.physics.arcade.overlap(this.player, this.enemies, this.simpleCollision);
     this.game.physics.arcade.collide(this.enemies, this.rocks, this.enemyRockCollision);
     this.game.physics.arcade.collide(this.doors, this.layer);
     this.game.physics.arcade.collide(this.keys, this.layer);
@@ -311,7 +324,7 @@ export default class extends Phaser.State {
     this.movementPlayer();
 
     this.enemies.forEach(enemy => {
-      if (enemy.detectPlayer() || enemy.noiseLevel >= 100000) {
+      if ((enemy.detectPlayer() || enemy.noiseLevel >= 100000) && this.player.isVisible == 1) {
 
         window.playerDetected = true;
         this.seen = true;
@@ -395,7 +408,7 @@ export default class extends Phaser.State {
       this.graphics.drawRect(this.game.camera.x + 32, this.game.camera.y + 50, this.NOISE_BAR_MAX * fact, 30);
     }
 
-   
+
     this.graphics.alpha = 1;
     this.graphics.endFill();
   }
@@ -526,7 +539,7 @@ export default class extends Phaser.State {
   // }
 
   simpleCollision(player, enemy) {
-    if((player.body.x < enemy.body.x && enemy.facing == 'left') || (player.body.x > enemy.body.x && enemy.facing == 'right')){
+    if((player.body.x < enemy.body.x && enemy.facing == 'left'&& player.isVisible == 1)|| ((player.body.x > enemy.body.x && enemy.facing == 'right')&& player.isVisible == 1  )){
       console.log(game);
       game.state.start('GameOver');
     }
@@ -589,9 +602,11 @@ export default class extends Phaser.State {
     console.log(rock.body.x);
     for(var i = 0; i < rock.enemies.length; i++)
       rock.enemies.children[i].setTarget(rock.body.x, rock.body.y);
-   
+
     rock.kill();
   }
+
+
   game_over() {
     this.game.state.start('GameOver');
   }

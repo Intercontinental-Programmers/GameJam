@@ -123,7 +123,7 @@ export default class extends Phaser.Sprite {
 
   chasePlayer() {
     console.log('czejsuje')
-    if(this.isOnTheSameLevel()){
+    if(this.isOnTheSameLevel() && this.player.isVisible == 1){
 
       if(this.player.body.x < this.body.x){
         this.facing = 'left';
@@ -138,8 +138,7 @@ export default class extends Phaser.Sprite {
   }
 
   isOnTheSameLevel(){
-
-    return Math.abs(this.player.body.y - this.body.y) < 50
+      return Math.abs(this.player.body.y - this.player.body.y) < 50;
   }
 
   checkTime(){
@@ -178,7 +177,7 @@ export default class extends Phaser.Sprite {
       noise *= player.lastNoises[0];
       // console.log("Distans: " +(distMax-Math.abs(this.body.x - player.body.x)) + "  12312     Generowany hałas: " + noise);
       //alert("das");
-      
+
       if(!window.playerDetected){
         this.noiseLevel += noise;
       }
@@ -186,8 +185,6 @@ export default class extends Phaser.Sprite {
   }
 
   update() {
-    //console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
-    
     if(!this.triggered){
       if(!window.playerDetected){
         this.wander();
@@ -273,7 +270,7 @@ export default class extends Phaser.Sprite {
   }
 
   goToTriger(){
-   
+
     if(this.triggeredTime > this.game.time.now){
       if(this.body.x > this.targetX){
         this.facing = 'left';
@@ -334,7 +331,7 @@ export default class extends Phaser.Sprite {
     }
     else{
       for(var i = 0; i < 6; i++){
-        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1])){
+        if(this.polyOfViewRight2.contains(this.player.coordinates[i][0], this.player.coordinates[i][1]) ){
           //change enemy attitude
           return true;
         }
@@ -363,7 +360,7 @@ export default class extends Phaser.Sprite {
     this.graphics.endFill();
     this.kill();
     this.player.makeNoise(2);
-    
+
   }
 
   setTarget(rockX, rockY){
