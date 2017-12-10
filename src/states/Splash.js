@@ -17,6 +17,7 @@ export default class extends Phaser.State {
     this.load.image('mushroom', 'assets/images/mushroom2.png'),
       this.load.image('tiles', 'assets/tiles.png'),
       this.load.tilemap('level', 'assets/level.csv', null, Phaser.Tilemap.CSV),
+      this.load.tilemap('new_map', 'assets/new_map.csv', null, Phaser.Tilemap.CSV),
       this.load.spritesheet('dude', 'assets/dude.png', 37, 50),
       this.load.spritesheet('enemy', 'assets/enemy.png', 37, 50),
       this.load.spritesheet('droid', 'assets/droid.png', 32, 32),

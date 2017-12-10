@@ -37,7 +37,7 @@ export default class extends Phaser.State {
       .tileSprite(0, 0, 900, 600, 'background');
     this.bg.fixedToCamera = true;
 
-    this.map = this.game.add.tilemap('level', 16, 16);
+    this.map = this.game.add.tilemap('new_map', 16, 16);
     this.map.addTilesetImage('tiles');
     this.game.physics.arcade.gravity.y = 800;
     // this.hideLayer = this.map.createBlankLayer('hidden', 900, 600, 50, 50);
@@ -47,22 +47,23 @@ export default class extends Phaser.State {
     // this.hideLayer.resizeWorld();
 
     //PLAYER
-    this.player = new Player({ game: this.game, x: 50, y: 50, asset: 'dude', layer: this.layer })
+    this.player = new Player({ game: this.game, x: 300, y: 150, asset: 'dude', layer: this.layer })
     this.game.add.existing(this.player);
 
     //HIDEABLE
-    this.hideable = new Hideable({game: this.game, x: 50, y: 50, asset: 'hideable', layer: this.hideLayer });
-    this.game.add.existing(this.hideable);
+    this.hideables = this.game.add.group();
+    // this.hideable1 = new Hideable({game: this.game, x: 150, y: 120, asset: 'hideable', layer: this.layer });
+    // this.game.add.existing(this.hideable1);
+    // this.hideables.add(this.hideable1);
 
     //LADDER
-    this.ladder = new Ladder({ game: this.game, x: 1230, y: 300, asset: '', height: 800, layer: this.layer })
+    this.ladder = new Ladder({ game: this.game, x: 288, y: 32, asset: '', height: 208, layer: this.layer })
     this.game.add.existing(this.ladder);
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(500, 100);
-    this.addNewEnemy(600, 120);
-    this.addNewEnemy(550, 120);
+    this.addNewEnemy(100, 50);
+    this.addNewEnemy(150, 50);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -72,8 +73,8 @@ export default class extends Phaser.State {
     //ROCKS
     this.rocks = this.game.add.group();
 
-    this.addKeyDoorPair(630, 300, this.genNewKey(850, 100));
-    this.addKeyDoorPair(825, 550, this.genNewKey(25, 300));
+    this.addKeyDoorPair(150, 150, this.genNewKey(50, 50));
+    // this.addKeyDoorPair(825, 550, this.genNewKey(25, 300));
 
     //GAME CAMERA, CURSORS
     this.game.camera.follow(this.player);
@@ -180,7 +181,7 @@ export default class extends Phaser.State {
 
 
 
-    this.drawNoiseBar();
+    // this.drawNoiseBar();
 
 
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
@@ -326,8 +327,8 @@ export default class extends Phaser.State {
 
   update() {
     console.log(this.player.isVisible);
-    this.game.physics.arcade.collide(this.hideable, this.layer);
-    if(this.game.physics.arcade.overlap(this.hideable, this.player)){
+    this.game.physics.arcade.collide(this.hideables, this.layer);
+    if(this.game.physics.arcade.overlap(this.hideables, this.player)){
         this.player.setInvisible(1);
     }else{
       this.player.setInvisible(0);
@@ -378,9 +379,9 @@ export default class extends Phaser.State {
     }
     this.seen = false;
 
-    //this.drawNoiseBar();
-    var intersections = this.shootRays();
-    this.drawVisibilityPoly(intersections);
+    // this.drawNoiseBar();
+    // var intersections = this.shootRays();
+    // this.drawVisibilityPoly(intersections);
 
     // var rect = new Phaser.Rectangle( 100, 100, 100, 100 ) ;
     // game.debug.geom( rect, 'rgba(255,0,0,1)' ) ;
