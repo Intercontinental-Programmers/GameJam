@@ -61,12 +61,12 @@ export default class extends Phaser.Sprite {
     moveLeft() {
 
         this.body.velocity.x = -this.speed;
-        if (!this.sneking && !this.fencing) {
+        if (!this.sneking && !this.fencing && this.isVisible) {
             this
                 .animations
                 .play('left');
             this.facing = 'left';
-            this.makeNoise(1);
+            this.makeNoise(1.1);
 
         } else if (this.sneking && !this.fencing) {
             this
@@ -74,10 +74,12 @@ export default class extends Phaser.Sprite {
                 .play('left_sneak');
             this.facing = 'left';
             this.makeNoise(0);
-        } else if (this.facing) {
+        } else if (this.fencing) {
             this
                 .animations
                 .play('left_upper');
+
+            this.makeNoise(2);
             this.facing = 'right';
         };
     }
@@ -85,13 +87,13 @@ export default class extends Phaser.Sprite {
     moveRight() {
 
         this.body.velocity.x = this.speed;
-        if (!this.sneking && !this.fencing) {
+        if (!this.sneking && !this.fencing && this.isVisible) {
             this
                 .animations
                 .play('right');
 
             this.facing = 'right';
-            this.makeNoise(1);
+            this.makeNoise(1.1);
         } else if (this.sneking && !this.fencing) {
             this
                 .animations
@@ -100,10 +102,12 @@ export default class extends Phaser.Sprite {
             this.facing = 'right';
             this.makeNoise(0);
         }
-        else if (this.facing) {
+        else if (this.fencing) {
             this
                 .animations
                 .play('right_upper');
+
+            this.makeNoise(2);
             this.facing = 'right';
         };
 
