@@ -20,7 +20,7 @@ export default class extends Phaser.Sprite {
     this.graphics = this.game.add.graphics(0, 0);
     this.player = player;
     //speed of movement
-    this.SPEED = 70;
+    this.SPEED = 40;
     //0 - wander, 1 - chase, 2 - myOgłuszenie
     this.state = 0;
     this.timeForMyOgłuszenie = this.game.time.now + 4000;

@@ -174,7 +174,25 @@ export default class extends Phaser.State {
     this.graphics.beginFill(0x000000);
     this.graphics.alpha = 0.5;
     this.graphics.drawPolygon(poly);
+    //this.layer.mask = this.graphics;
 
+        // var repare_x, repare_y;
+    // intersections.forEach(function (intersection) {
+    //   if (intersection.x > 200)
+    //     repare_x = intersection.x + 20;
+    //   else if (intersection.x < 200)
+    //     repare_x = intersection.x - 20;
+    //   else if (intersection.x == 200)
+    //     repare_x = intersection.x;
+    //   if (intersection.y > 200)
+    //     repare_y = intersection.y + 20;
+    //   else if (intersection.y < 200)
+    //     repare_y = intersection.y - 20;
+    //   else if (intersection.y == 200)
+    //     repare_y = intersection.y;
+    //   points.push(repare_x, repare_y);
+    // });
+    // var poly = new Phaser.Polygon(points);
 
     this.lightSprite.reset(this.game.camera.x, this.game.camera.y);
     this.shadowTexture.context.fillStyle = 'rgb(0, 0, 0)';
