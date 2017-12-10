@@ -12,7 +12,7 @@ export default class extends Phaser.State {
     super()
     this.key_counter = 0;
     this.CHASING_TIME = 4000;
-    this.GAME_OVER_TIME = 1500;
+    this.GAME_OVER_TIME = 2000;
     window.playerDetected = false;
   }
 
@@ -49,7 +49,7 @@ export default class extends Phaser.State {
 
     //ENEMIES
     this.enemies = this.game.add.group();
-    this.addNewEnemy(400, 100);
+    this.addNewEnemy(500, 100);
     this.addNewEnemy(1000, 300);
     this.addNewEnemy(800, 550);
 
@@ -135,11 +135,12 @@ export default class extends Phaser.State {
   }
 
   checkTimeUndetected() {
-
+    console.log(Date.now() - this.timeUnseen)
     return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
   }
 
   checkTimeDetected() {
+    
     return (Date.now() - this.timeSeen) > this.GAME_OVER_TIME;
   }
 
@@ -223,7 +224,7 @@ export default class extends Phaser.State {
 
         this.enemies.forEach(enemy => {
           if (Math.abs(this.player.x - enemy.x) < 50) {
-            if (this.lookingAtEnemy(this.player, enemy)) {
+            if (this.lookingAtEnemyFromBehind(this.player, enemy)) {
               enemy.killEnemy();
               this.enemies.remove(enemy);
             }
@@ -238,15 +239,24 @@ export default class extends Phaser.State {
     }
   }
 
-  lookingAtEnemy(player, enemy) {
+  lookingAtEnemyFromBehind(player, enemy) {
 
-    if (player.facing == 'left') {
+    if (player.facing == 'left' && enemy.facing == 'left') {
       return (player.body.x > enemy.body.x) && this.areOnTheSameLevel(player, enemy);
-    } else if (player.facing == 'right') {
+    } else if (player.facing == 'right' && enemy.facing == 'right') {
       return (player.body.x < enemy.body.x) && this.areOnTheSameLevel(player, enemy);
-    } else {
-      return this.areOnTheSameLevel(player, enemy);
+    } 
+    else if(player.facing == 'idle'){
+      if(enemy.facing == 'left'){
+        return (player.body.x > enemy.body.x) && this.areOnTheSameLevel(player, enemy);
+      }
+      else{
+        return (player.body.x < enemy.body.x) && this.areOnTheSameLevel(player, enemy);
+      }
     }
+    // else {
+    //   return this.areOnTheSameLevel(player, enemy);
+    // }
   }
 
   areOnTheSameLevel(player, enemy) {
