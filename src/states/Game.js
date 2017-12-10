@@ -11,7 +11,7 @@ export default class extends Phaser.State {
   constructor() {
     super()
     this.key_counter = 0;
-    this.CHASING_TIME = 4000;
+    this.CHASING_TIME = 2000;
     this.GAME_OVER_TIME = 2000;
     window.playerDetected = false;
   }
@@ -50,8 +50,8 @@ export default class extends Phaser.State {
     //ENEMIES
     this.enemies = this.game.add.group();
     this.addNewEnemy(500, 100);
-    this.addNewEnemy(1000, 300);
-    this.addNewEnemy(800, 550);
+    this.addNewEnemy(600, 120);
+    this.addNewEnemy(550, 120);
 
     //DOORS AND KEYS
     this.doors = this.game.add.group();
@@ -142,7 +142,7 @@ export default class extends Phaser.State {
   }
 
   switchDirection(enemy, door){
-    console.log('collide');
+    // console.log('collide');
     if(enemy.facing == 'left')
       enemy.body.x += 2;
     else
@@ -151,7 +151,7 @@ export default class extends Phaser.State {
   }
 
   checkTimeUndetected() {
-    console.log(Date.now() - this.timeUnseen)
+    // console.log(Date.now() - this.timeUnseen)
     return (Date.now() - this.timeUnseen) > this.CHASING_TIME;
   }
 

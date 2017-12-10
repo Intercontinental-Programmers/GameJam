@@ -110,7 +110,7 @@ export default class extends Phaser.Sprite {
   }
 
   chasePlayer() {
-
+    console.log('czejsuje')
     if(this.isOnTheSameLevel()){
     
       if(this.player.body.x < this.body.x){
@@ -164,14 +164,14 @@ export default class extends Phaser.Sprite {
       if( Math.abs(this.body.x - player.body.x) < 1000 && Math.abs(this.body.y - player.body.y)< 50){
       let noise = (distMax - Math.abs(this.body.x - player.body.x));
       noise *= player.lastNoises[0];
-      console.log("Distans: " +(distMax-Math.abs(this.body.x - player.body.x)) + "  12312     Generowany hałas: " + noise);
+      // console.log("Distans: " +(distMax-Math.abs(this.body.x - player.body.x)) + "  12312     Generowany hałas: " + noise);
       //alert("das");
       this.noiseLevel += noise;
     }
   }
 
   update() {
-    console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
+    // console.log(`enemy ${this}: Level of noise: ${this.noiseLevel}`);
     if(!window.playerDetected){
       this.wander();
     }
@@ -185,8 +185,9 @@ export default class extends Phaser.Sprite {
       this.noiseLevel -= 100;
     }
     if(this.noiseLevel > 100000){
-      console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
-      alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
+      // console.log(`enemy ${this}: Wkurwilem się! aghhhh!`);
+      // alert(`enemy ${this}: Level of noise: ${this.noiseLevel}           Dist: ${Math.abs(this.body.x - this.player.body.x)}!`);
+      window.playerDetected = true;
       this.noiseLevel = 0;
     }
     this.polyOfViewRight = new Phaser.Polygon([

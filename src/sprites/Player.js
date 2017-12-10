@@ -153,7 +153,7 @@ export default class extends Phaser.Sprite {
 
     makeNoise(value){
         this.lastNoises.push(value);
-        console.log(this.lastNoises);
+        // console.log(this.lastNoises);
     }
 
     setOnLadder(status) {
